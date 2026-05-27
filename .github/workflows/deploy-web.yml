@@ -37,6 +37,7 @@ jobs:
         run: pnpm --filter web build
         env:
           NEXT_PUBLIC_BASE_PATH: /vorarlberg-peaks
+          NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
