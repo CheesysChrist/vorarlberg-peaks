@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useMountains, useHikes } from '@/lib/queries';
+import { useAuth } from '@/lib/auth';
 import { MountainCard } from '@/components/mountains/MountainCard';
 import { FilterBar } from '@/components/mountains/FilterBar';
+import { AuthModal } from '@/components/auth/AuthModal';
 import type { MountainWithHikeStatus } from '@vorarlberg-peaks/types';
 
 const PeaksMap = dynamic(() => import('@/components/map/PeaksMap').then((m) => m.PeaksMap), {
@@ -13,6 +15,7 @@ const PeaksMap = dynamic(() => import('@/components/map/PeaksMap').then((m) => m
 });
 
 export default function DashboardPage() {
+  const { isAuthenticated, user, logout } = useAuth();
   const [selectedMountain, setSelectedMountain] = useState<MountainWithHikeStatus | null>(null);
   const [filters, setFilters] = useState<{ regionId?: string; difficulty?: string; search?: string }>({});
 
@@ -25,6 +28,8 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
+      {!isAuthenticated && <AuthModal />}
+
       <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shrink-0">
         <div className="flex items-center gap-3">
           <span className="text-2xl">⛰️</span>
@@ -33,8 +38,21 @@ export default function DashboardPage() {
             <p className="text-xs text-gray-500 mt-0.5">Your mountain log</p>
           </div>
         </div>
-        <div className="text-sm text-gray-500">
-          <span className="text-emerald-600 font-semibold">{totalHikedCount}</span> summits reached
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-gray-500">
+            <span className="text-emerald-600 font-semibold">{totalHikedCount}</span> summits reached
+          </div>
+          {isAuthenticated && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">{user?.username}</span>
+              <button
+                onClick={logout}
+                className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1 rounded-md hover:bg-gray-100 transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
