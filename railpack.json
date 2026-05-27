@@ -1,0 +1,12 @@
+{
+  "build": {
+    "cmds": [
+      "pnpm --filter @vorarlberg-peaks/types build",
+      "pnpm --filter api exec prisma generate",
+      "pnpm --filter api build"
+    ]
+  },
+  "start": {
+    "cmd": "node apps/api/dist/main"
+  }
+}
