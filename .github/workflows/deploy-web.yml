@@ -26,7 +26,7 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - run: pnpm install -g vercel@latest
+      - run: npm install -g vercel@latest
 
       - name: Pull Vercel environment
         run: vercel pull --yes --environment=${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }} --token=${{ secrets.VERCEL_TOKEN }}
