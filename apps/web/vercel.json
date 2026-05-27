@@ -1,5 +1,5 @@
 {
   "buildCommand": "next build --webpack",
-  "installCommand": "cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @vorarlberg-peaks/types build",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile --ignore-scripts && pnpm --filter @vorarlberg-peaks/types build",
   "framework": "nextjs"
 }
