@@ -17,25 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'pnpm'
-
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      - name: Pull Vercel environment info
-        run: vercel pull --yes --environment=${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }} --cwd apps/web --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build project artifacts
-        run: |
-          echo "node-linker=hoisted" >> .npmrc
-          vercel build ${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --cwd apps/web --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
-
-      - name: Deploy pre-built artifacts
-        run: vercel deploy --prebuilt ${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --cwd apps/web --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy
+        run: vercel deploy --cwd apps/web ${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}
