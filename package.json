@@ -9,7 +9,8 @@
   },
   "scripts": {
     "dev": "pnpm --parallel --filter './apps/*' dev",
-    "build": "pnpm --filter './packages/*' build && pnpm --filter './apps/*' build",
+    "build": "pnpm --filter @vorarlberg-peaks/types build && pnpm --filter api exec prisma generate && pnpm --filter api build",
+    "start": "pnpm --filter api exec prisma migrate deploy && node apps/api/dist/main",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test"
