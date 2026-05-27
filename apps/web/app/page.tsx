@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useMountains } from '@/lib/queries';
+import { useMountains, useHikes } from '@/lib/queries';
 import { MountainCard } from '@/components/mountains/MountainCard';
 import { FilterBar } from '@/components/mountains/FilterBar';
 import type { MountainWithHikeStatus } from '@vorarlberg-peaks/types';
@@ -17,8 +17,11 @@ export default function DashboardPage() {
   const [filters, setFilters] = useState<{ regionId?: string; difficulty?: string; search?: string }>({});
 
   const { data, isLoading } = useMountains({ ...filters, limit: 200 });
+  const { data: globalStats } = useMountains({ limit: 1 });
+  const { data: hikes } = useHikes();
   const mountains = data?.data ?? [];
-  const hikedCount = mountains.filter((m) => m.hiked).length;
+  const totalHikedCount = hikes?.length ?? 0;
+  const totalCount = globalStats?.total ?? data?.total ?? 0;
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
@@ -31,7 +34,7 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="text-sm text-gray-500">
-          <span className="text-emerald-600 font-semibold">{hikedCount}</span> summits reached
+          <span className="text-emerald-600 font-semibold">{totalHikedCount}</span> summits reached
         </div>
       </header>
 
@@ -41,8 +44,8 @@ export default function DashboardPage() {
             <FilterBar
               filters={filters}
               onChange={setFilters}
-              totalCount={data?.total ?? 0}
-              hikedCount={hikedCount}
+              totalCount={totalCount}
+              hikedCount={totalHikedCount}
             />
           </div>
 
