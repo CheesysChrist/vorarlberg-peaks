@@ -38,6 +38,7 @@ jobs:
         env:
           NEXT_PUBLIC_BASE_PATH: /vorarlberg-peaks
           NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
