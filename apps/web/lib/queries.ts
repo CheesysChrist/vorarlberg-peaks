@@ -1,0 +1,52 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiClient } from './api-client';
+import type { MountainWithHikeStatus, PaginatedResponse, Region, CreateHikeDto } from '@vorarlberg-peaks/types';
+
+export const queryKeys = {
+  mountains: (params?: object) => ['mountains', params] as const,
+  regions: () => ['regions'] as const,
+  hikes: () => ['hikes'] as const,
+};
+
+export function useMountains(params?: {
+  regionId?: string;
+  difficulty?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}) {
+  return useQuery({
+    queryKey: queryKeys.mountains(params),
+    queryFn: () =>
+      apiClient.get<PaginatedResponse<MountainWithHikeStatus>>('/mountains', { params }).then((r) => r.data),
+  });
+}
+
+export function useRegions() {
+  return useQuery({
+    queryKey: queryKeys.regions(),
+    queryFn: () => apiClient.get<Region[]>('/regions').then((r) => r.data),
+  });
+}
+
+export function useLogHike() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: CreateHikeDto) => apiClient.post('/hikes', dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.mountains() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.hikes() });
+    },
+  });
+}
+
+export function useRemoveHike() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (mountainId: string) => apiClient.delete(`/hikes/${mountainId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.mountains() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.hikes() });
+    },
+  });
+}

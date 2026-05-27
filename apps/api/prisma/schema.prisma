@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  hikes Hike[]
+
+  @@map("users")
+}
+
+model Region {
+  id          String  @id @default(cuid())
+  name        String
+  nameDe      String?
+  description String?
+
+  mountains Mountain[]
+
+  @@map("regions")
+}
+
+model Mountain {
+  id          String     @id @default(cuid())
+  name        String
+  nameDe      String?
+  altitude    Int
+  latitude    Float
+  longitude   Float
+  regionId    String
+  difficulty  Difficulty?
+  description String?
+  imageUrl    String?
+  externalId  String?    @unique
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  region Region @relation(fields: [regionId], references: [id])
+  hikes  Hike[]
+
+  @@map("mountains")
+}
+
+model Hike {
+  id         String   @id @default(cuid())
+  userId     String
+  mountainId String
+  hikedAt    DateTime
+  notes      String?
+  rating     Int?
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mountain Mountain @relation(fields: [mountainId], references: [id])
+
+  @@unique([userId, mountainId])
+  @@map("hikes")
+}
+
+enum Difficulty {
+  easy
+  moderate
+  hard
+  expert
+}
