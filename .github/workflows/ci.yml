@@ -27,6 +27,9 @@ jobs:
       - name: Build shared types
         run: pnpm --filter @vorarlberg-peaks/types build
 
+      - name: Generate Prisma client
+        run: pnpm --filter api exec prisma generate
+
       - name: Type check API
         run: pnpm --filter api typecheck
 
