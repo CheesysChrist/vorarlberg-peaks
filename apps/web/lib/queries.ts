@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './api-client';
-import type { MountainWithHikeStatus, PaginatedResponse, Region, CreateHikeDto } from '@vorarlberg-peaks/types';
+import type { MountainWithHikeStatus, PaginatedResponse, Region, CreateHikeDto, Hike } from '@vorarlberg-peaks/types';
 
 export const queryKeys = {
   mountains: (params?: object) => ['mountains', params] as const,
@@ -37,6 +37,13 @@ export function useLogHike() {
       queryClient.invalidateQueries({ queryKey: queryKeys.mountains() });
       queryClient.invalidateQueries({ queryKey: queryKeys.hikes() });
     },
+  });
+}
+
+export function useHikes() {
+  return useQuery({
+    queryKey: queryKeys.hikes(),
+    queryFn: () => apiClient.get<Hike[]>('/hikes').then((r) => r.data),
   });
 }
 
