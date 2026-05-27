@@ -35,5 +35,11 @@ jobs:
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
 
+      - name: Dereference pnpm symlinks in .vercel/output
+        run: |
+          rsync -aL apps/web/.vercel/output/ apps/web/.vercel/output_resolved/
+          rm -rf apps/web/.vercel/output
+          mv apps/web/.vercel/output_resolved apps/web/.vercel/output
+
       - name: Deploy pre-built artifacts
         run: vercel deploy --prebuilt ${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --cwd apps/web --token=${{ secrets.VERCEL_TOKEN }}
