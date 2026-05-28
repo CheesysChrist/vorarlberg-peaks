@@ -8,7 +8,12 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
   const allowedOrigins = (process.env.FRONTEND_URL ?? 'http://localhost:3001').split(',').map(s => s.trim());
-  app.enableCors({ origin: allowedOrigins });
+  app.enableCors({
+    origin: allowedOrigins,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   const swaggerConfig = new DocumentBuilder()
