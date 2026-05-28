@@ -7,9 +7,25 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
-  const allowedOrigins = (process.env.FRONTEND_URL ?? 'http://localhost:3001').split(',').map(s => s.trim());
+  const allowedOriginList = (process.env.FRONTEND_URL ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: allowedOrigins,
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      // Allow no-origin requests (mobile apps, server-to-server, Swagger)
+      if (!origin) return callback(null, true);
+      if (
+        allowedOriginList.includes(origin) ||
+        /^https?:\/\/localhost(:\d+)?$/.test(origin) ||
+        origin.endsWith('.github.io')
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: origin ${origin} not allowed`), false);
+      }
+    },
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

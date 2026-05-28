@@ -14,6 +14,7 @@ export interface UserStats {
   totalElevation: number;
   highestPeak: MountainWithHikeStatus | null;
   regionsExplored: number;
+  hikedThisYear: number;
   level: { number: number; title: string; currentMin: number; nextAt: number | null };
 }
 
@@ -35,6 +36,8 @@ export function computeStats(hikes: Hike[], mountains: MountainWithHikeStatus[])
   );
   const regionsExplored = new Set(hiked.map((m) => m.regionId)).size;
   const totalSummits = hiked.length;
+  const currentYear = new Date().getFullYear();
+  const hikedThisYear = hikes.filter((h) => new Date(h.hikedAt).getFullYear() === currentYear).length;
   const levelData = [...LEVELS].reverse().find((l) => totalSummits >= l.min) ?? LEVELS[0];
 
   return {
@@ -42,6 +45,7 @@ export function computeStats(hikes: Hike[], mountains: MountainWithHikeStatus[])
     totalElevation,
     highestPeak,
     regionsExplored,
+    hikedThisYear,
     level: {
       number: LEVELS.indexOf(levelData) + 1,
       title: levelData.title,

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import type { Hike, MountainWithHikeStatus } from '@vorarlberg-peaks/types';
 import { useLogHike, useRemoveHike } from '@/lib/queries';
 import { ConfettiBurst } from '@/components/hikes/Confetti';
+import { useToast } from '@/lib/toast';
 
 interface LogHikeModalProps {
   mountain: MountainWithHikeStatus;
@@ -32,6 +33,7 @@ export function LogHikeModal({ mountain, existingHike, onClose }: LogHikeModalPr
   const [notes, setNotes] = useState(existingHike?.notes ?? '');
 
   const [showConfetti, setShowConfetti] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -53,15 +55,24 @@ export function LogHikeModal({ mountain, existingHike, onClose }: LogHikeModalPr
       },
       {
         onSuccess: () => {
-          if (!isEdit) setShowConfetti(true);
-          else onClose();
+          if (!isEdit) {
+            toast(`${mountain.name} summited! 🎉`);
+            setShowConfetti(true);
+          } else {
+            toast('Summit updated');
+            onClose();
+          }
         },
+        onError: () => toast('Something went wrong', 'error'),
       }
     );
   };
 
   const handleRemove = () => {
-    removeHike.mutate(mountain.id, { onSuccess: () => onClose() });
+    removeHike.mutate(mountain.id, {
+      onSuccess: () => { toast('Hike removed'); onClose(); },
+      onError: () => toast('Something went wrong', 'error'),
+    });
   };
 
   const displayRating = hoverRating ?? rating ?? 0;

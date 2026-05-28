@@ -17,51 +17,144 @@ const PeaksMap = dynamic(() => import('@/components/map/PeaksMap').then((m) => m
 });
 
 type SidebarTab = 'peaks' | 'achievements';
+type MobilePanel = 'map' | 'peaks' | 'achievements';
+type SortKey = 'altitude_desc' | 'altitude_asc' | 'name_asc' | 'hiked_desc';
+
+function sortMountains(mountains: MountainWithHikeStatus[], sort: SortKey): MountainWithHikeStatus[] {
+  return [...mountains].sort((a, b) => {
+    switch (sort) {
+      case 'altitude_asc':  return a.altitude - b.altitude;
+      case 'name_asc':      return a.name.localeCompare(b.name);
+      case 'hiked_desc':    return (b.hikedAt ?? '').localeCompare(a.hikedAt ?? '');
+      default:              return b.altitude - a.altitude;
+    }
+  });
+}
 
 export default function DashboardPage() {
   const { isAuthenticated, user, logout } = useAuth();
   const [selectedMountain, setSelectedMountain] = useState<MountainWithHikeStatus | null>(null);
   const [filters, setFilters] = useState<{ regionId?: string; difficulty?: string; search?: string; hiked?: boolean }>({});
   const [activeTab, setActiveTab] = useState<SidebarTab>('peaks');
+  const [sortKey, setSortKey] = useState<SortKey>('altitude_desc');
+  const [mobilePanel, setMobilePanel] = useState<MobilePanel>('map');
 
   const { data, isLoading } = useMountains({ ...filters, limit: 200 });
   const { data: globalStats } = useMountains({ limit: 1 });
   const { data: hikes } = useHikes(isAuthenticated);
-  const mountains = data?.data ?? [];
+  const mountains = sortMountains(data?.data ?? [], sortKey);
   const totalHikedCount = hikes?.length ?? 0;
   const totalCount = globalStats?.total ?? data?.total ?? 0;
 
-  // Build a fast lookup from mountainId → full Hike (for notes/rating)
   const hikesMap = new Map((hikes ?? []).map((h) => [h.mountainId, h]));
 
-  // Always derive from the live mountains list so it reflects post-mutation state
   const resolvedSelected = selectedMountain
     ? (mountains.find((m) => m.id === selectedMountain.id) ?? selectedMountain)
     : null;
 
   const handleMountainSelect = (mountain: MountainWithHikeStatus) => {
     setSelectedMountain((prev) => (prev?.id === mountain.id ? null : mountain));
+    // On mobile, switch to peaks panel to show the detail
+    setMobilePanel('peaks');
   };
+
+  // Shared sidebar content between mobile and desktop
+  const sidebarInner = (
+    <>
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 shrink-0">
+        <TabButton active={activeTab === 'peaks'} onClick={() => setActiveTab('peaks')}>
+          Peaks
+        </TabButton>
+        <TabButton active={activeTab === 'achievements'} onClick={() => setActiveTab('achievements')}>
+          Achievements
+          {totalHikedCount > 0 && (
+            <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 rounded-full px-1.5 py-0.5 font-medium tabular-nums">
+              {totalHikedCount}
+            </span>
+          )}
+        </TabButton>
+      </div>
+
+      {activeTab === 'peaks' ? (
+        <>
+          <div className="p-4 border-b border-gray-100 shrink-0">
+            <FilterBar filters={filters} onChange={setFilters} totalCount={totalCount} hikedCount={totalHikedCount} />
+          </div>
+
+          <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between shrink-0">
+            <span className="text-xs text-gray-400">{mountains.length} peaks</span>
+            <select
+              value={sortKey}
+              onChange={(e) => setSortKey(e.target.value as SortKey)}
+              className="text-xs text-gray-500 border-0 bg-transparent focus:outline-none cursor-pointer"
+            >
+              <option value="altitude_desc">Altitude ↓</option>
+              <option value="altitude_asc">Altitude ↑</option>
+              <option value="name_asc">Name A–Z</option>
+              <option value="hiked_desc">Recently hiked</option>
+            </select>
+          </div>
+
+          <div
+            className="overflow-y-auto p-4 space-y-2"
+            style={{ flex: resolvedSelected ? '0 0 45%' : '1 1 0' }}
+          >
+            {isLoading && Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />
+            ))}
+            {mountains.map((mountain) => (
+              <MountainCard
+                key={mountain.id}
+                mountain={mountain}
+                hike={hikesMap.get(mountain.id)}
+                selected={selectedMountain?.id === mountain.id}
+                onClick={() => handleMountainSelect(mountain)}
+              />
+            ))}
+            {!isLoading && mountains.length === 0 && (
+              <p className="text-center text-gray-400 py-12 text-sm">No mountains found</p>
+            )}
+          </div>
+
+          {resolvedSelected && (
+            <MountainDetailPanel
+              mountain={resolvedSelected}
+              hike={hikesMap.get(resolvedSelected.id)}
+              onClose={() => setSelectedMountain(null)}
+            />
+          )}
+        </>
+      ) : (
+        <div className="flex-1 overflow-y-auto">
+          <AchievementsView hikes={hikes ?? []} mountains={mountains} />
+        </div>
+      )}
+    </>
+  );
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {!isAuthenticated && <AuthModal />}
 
-      <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shrink-0">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">⛰️</span>
+      {/* Header */}
+      <header className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4 bg-white border-b border-gray-200 shrink-0">
+        <div className="flex items-center gap-2 md:gap-3">
+          <span className="text-xl md:text-2xl">⛰️</span>
           <div>
-            <h1 className="text-lg font-bold text-gray-900 leading-none">Vorarlberg Peaks</h1>
-            <p className="text-xs text-gray-500 mt-0.5">Your mountain log</p>
+            <h1 className="text-base md:text-lg font-bold text-gray-900 leading-none">Vorarlberg Peaks</h1>
+            <p className="hidden sm:block text-xs text-gray-500 mt-0.5">Your mountain log</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
           <div className="text-sm text-gray-500">
-            <span className="text-emerald-600 font-semibold">{totalHikedCount}</span> summits reached
+            <span className="text-emerald-600 font-semibold">{totalHikedCount}</span>
+            <span className="hidden sm:inline"> summits reached</span>
+            <span className="sm:hidden"> summits</span>
           </div>
           {isAuthenticated && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">{user?.username}</span>
+              <span className="hidden sm:block text-sm text-gray-500">{user?.username}</span>
               <button
                 onClick={logout}
                 className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1 rounded-md hover:bg-gray-100 transition-colors"
@@ -73,90 +166,76 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="flex flex-1 min-h-0">
+      {/* ── Desktop layout (md+) ── */}
+      <div className="hidden md:flex flex-1 min-h-0">
         <aside className="w-96 shrink-0 flex flex-col border-r border-gray-200 bg-white">
-          {/* Tabs */}
-          <div className="flex border-b border-gray-200 shrink-0">
-            <TabButton active={activeTab === 'peaks'} onClick={() => setActiveTab('peaks')}>
-              Peaks
-            </TabButton>
-            <TabButton active={activeTab === 'achievements'} onClick={() => setActiveTab('achievements')}>
-              Achievements
-              {totalHikedCount > 0 && (
-                <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 rounded-full px-1.5 py-0.5 font-medium tabular-nums">
-                  {totalHikedCount}
-                </span>
-              )}
-            </TabButton>
-          </div>
+          {sidebarInner}
+        </aside>
+        <main className="flex-1 p-4">
+          <PeaksMap
+            mountains={mountains}
+            onMountainSelect={handleMountainSelect}
+            fitKey={JSON.stringify(filters)}
+            selectedMountainId={selectedMountain?.id}
+          />
+        </main>
+      </div>
 
-          {activeTab === 'peaks' ? (
-            <>
-              <div className="p-4 border-b border-gray-100 shrink-0">
-                <FilterBar
-                  filters={filters}
-                  onChange={setFilters}
-                  totalCount={totalCount}
-                  hikedCount={totalHikedCount}
-                />
-              </div>
-
-              {/* Mountain list — shrinks when detail panel is open */}
-              <div
-                className="overflow-y-auto p-4 space-y-2"
-                style={{ flex: resolvedSelected ? '0 0 45%' : '1 1 0' }}
-              >
-                {isLoading &&
-                  Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />
-                  ))}
-                {mountains.map((mountain) => (
-                  <MountainCard
-                    key={mountain.id}
-                    mountain={mountain}
-                    hike={hikesMap.get(mountain.id)}
-                    selected={selectedMountain?.id === mountain.id}
-                    onClick={() => handleMountainSelect(mountain)}
-                  />
-                ))}
-                {!isLoading && mountains.length === 0 && (
-                  <p className="text-center text-gray-400 py-12 text-sm">No mountains found</p>
-                )}
-              </div>
-
-              {/* Detail panel — appears below list when a mountain is selected */}
-              {resolvedSelected && (
-                <MountainDetailPanel
-                  mountain={resolvedSelected}
-                  hike={hikesMap.get(resolvedSelected.id)}
-                  onClose={() => setSelectedMountain(null)}
-                />
-              )}
-            </>
-          ) : (
-            <div className="flex-1 overflow-y-auto">
-              <AchievementsView
-                hikes={hikes ?? []}
+      {/* ── Mobile layout (< md) ── */}
+      <div className="flex md:hidden flex-col flex-1 min-h-0">
+        <div className="flex-1 min-h-0 overflow-hidden">
+          {mobilePanel === 'map' && (
+            <div className="p-3 h-full">
+              <PeaksMap
                 mountains={mountains}
-                totalCount={totalCount}
+                onMountainSelect={handleMountainSelect}
+                fitKey={JSON.stringify(filters)}
+                selectedMountainId={selectedMountain?.id}
               />
             </div>
           )}
-        </aside>
+          {mobilePanel === 'peaks' && (
+            <div className="flex flex-col h-full bg-white overflow-hidden">
+              {sidebarInner}
+            </div>
+          )}
+          {mobilePanel === 'achievements' && (
+            <div className="h-full overflow-y-auto bg-gray-50">
+              <AchievementsView hikes={hikes ?? []} mountains={mountains} />
+            </div>
+          )}
+        </div>
 
-        <main className="flex-1 p-4">
-          <PeaksMap mountains={mountains} onMountainSelect={handleMountainSelect} />
-        </main>
+        {/* Mobile bottom tab bar */}
+        <nav className="flex shrink-0 border-t border-gray-200 bg-white safe-area-pb">
+          {([
+            { key: 'map', icon: '🗺️', label: 'Map' },
+            { key: 'peaks', icon: '⛰️', label: 'Peaks' },
+            { key: 'achievements', icon: '🏅', label: 'Stats' },
+          ] as { key: MobilePanel; icon: string; label: string }[]).map(({ key, icon, label }) => (
+            <button
+              key={key}
+              onClick={() => {
+                setMobilePanel(key);
+                // Keep the sidebar tab in sync so switching back to Peaks shows the list
+                if (key === 'peaks') setActiveTab('peaks');
+              }}
+              className={[
+                'flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 text-xs font-medium transition-colors',
+                mobilePanel === key ? 'text-emerald-600' : 'text-gray-500',
+              ].join(' ')}
+            >
+              <span className="text-xl leading-none">{icon}</span>
+              <span>{label}</span>
+            </button>
+          ))}
+        </nav>
       </div>
     </div>
   );
 }
 
-function TabButton({
-  active,
-  onClick,
-  children,
-}: {
+function TabButton({ active, onClick, children }: {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
