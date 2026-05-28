@@ -14,6 +14,15 @@ const DIFFICULTY_STYLE: Record<string, { color: string; label: string }> = {
   expert:   { color: '#dc2626', label: 'Expert' },
 };
 
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
 function buildPopupHTML(mountain: MountainWithHikeStatus): string {
   const diff = mountain.difficulty ? DIFFICULTY_STYLE[mountain.difficulty] : null;
   const hikeDate = mountain.hikedAt
@@ -23,15 +32,21 @@ function buildPopupHTML(mountain: MountainWithHikeStatus): string {
         year: 'numeric',
       })
     : null;
+  const description = mountain.description
+    ? escapeHtml(mountain.description.length > 120 ? `${mountain.description.slice(0, 117)}…` : mountain.description)
+    : null;
 
   return `
     <div style="font-family:system-ui,-apple-system,sans-serif;min-width:160px;padding:2px 0">
-      <div style="font-weight:700;font-size:13px;color:#111827;line-height:1.3">${mountain.name}</div>
+      <div style="font-weight:700;font-size:13px;color:#111827;line-height:1.3">${escapeHtml(mountain.name)}</div>
       <div style="font-size:11px;color:#6b7280;margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
         <span>${mountain.altitude}m</span>
-        ${mountain.region?.name ? `<span style="opacity:.5">·</span><span>${mountain.region.name}</span>` : ''}
+        ${mountain.region?.name ? `<span style="opacity:.5">·</span><span>${escapeHtml(mountain.region.name)}</span>` : ''}
         ${diff ? `<span style="opacity:.5">·</span><span style="color:${diff.color};font-weight:600">${diff.label}</span>` : ''}
       </div>
+      ${description ? `
+        <div style="margin-top:7px;font-size:11px;line-height:1.45;color:#4b5563">${description}</div>
+      ` : ''}
       ${mountain.hiked && hikeDate ? `
         <div style="margin-top:7px;padding:4px 8px;background:#ecfdf5;border-radius:6px;font-size:11px;color:#059669;font-weight:500">
           ✓ ${hikeDate}
