@@ -21,7 +21,7 @@ type SidebarTab = 'peaks' | 'achievements';
 export default function DashboardPage() {
   const { isAuthenticated, user, logout } = useAuth();
   const [selectedMountain, setSelectedMountain] = useState<MountainWithHikeStatus | null>(null);
-  const [filters, setFilters] = useState<{ regionId?: string; difficulty?: string; search?: string }>({});
+  const [filters, setFilters] = useState<{ regionId?: string; difficulty?: string; search?: string; hiked?: boolean }>({});
   const [activeTab, setActiveTab] = useState<SidebarTab>('peaks');
 
   const { data, isLoading } = useMountains({ ...filters, limit: 200 });
@@ -33,6 +33,11 @@ export default function DashboardPage() {
 
   // Build a fast lookup from mountainId → full Hike (for notes/rating)
   const hikesMap = new Map((hikes ?? []).map((h) => [h.mountainId, h]));
+
+  // Always derive from the live mountains list so it reflects post-mutation state
+  const resolvedSelected = selectedMountain
+    ? (mountains.find((m) => m.id === selectedMountain.id) ?? selectedMountain)
+    : null;
 
   const handleMountainSelect = (mountain: MountainWithHikeStatus) => {
     setSelectedMountain((prev) => (prev?.id === mountain.id ? null : mountain));
@@ -99,7 +104,7 @@ export default function DashboardPage() {
               {/* Mountain list — shrinks when detail panel is open */}
               <div
                 className="overflow-y-auto p-4 space-y-2"
-                style={{ flex: selectedMountain ? '0 0 45%' : '1 1 0' }}
+                style={{ flex: resolvedSelected ? '0 0 45%' : '1 1 0' }}
               >
                 {isLoading &&
                   Array.from({ length: 6 }).map((_, i) => (
@@ -120,10 +125,10 @@ export default function DashboardPage() {
               </div>
 
               {/* Detail panel — appears below list when a mountain is selected */}
-              {selectedMountain && (
+              {resolvedSelected && (
                 <MountainDetailPanel
-                  mountain={selectedMountain}
-                  hike={hikesMap.get(selectedMountain.id)}
+                  mountain={resolvedSelected}
+                  hike={hikesMap.get(resolvedSelected.id)}
                   onClose={() => setSelectedMountain(null)}
                 />
               )}

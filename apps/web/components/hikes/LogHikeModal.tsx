@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Hike, MountainWithHikeStatus } from '@vorarlberg-peaks/types';
 import { useLogHike, useRemoveHike } from '@/lib/queries';
 import { ConfettiBurst } from '@/components/hikes/Confetti';
@@ -32,6 +32,13 @@ export function LogHikeModal({ mountain, existingHike, onClose }: LogHikeModalPr
   const [notes, setNotes] = useState(existingHike?.notes ?? '');
 
   const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
+
   const logHike = useLogHike();
   const removeHike = useRemoveHike();
 

@@ -138,7 +138,7 @@ export function AchievementsView({ hikes, mountains, totalCount }: AchievementsV
               .sort((a, b) => new Date(b.hikedAt).getTime() - new Date(a.hikedAt).getTime())
               .slice(0, 5)
               .map((hike) => {
-                const mountain = mountains.find((m) => m.id === hike.mountainId);
+                const m = hike.mountain ?? mountains.find((x) => x.id === hike.mountainId);
                 return (
                   <div
                     key={hike.id}
@@ -147,10 +147,10 @@ export function AchievementsView({ hikes, mountains, totalCount }: AchievementsV
                     <span className="text-lg select-none shrink-0">🥾</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-gray-900 truncate">
-                        {mountain?.name ?? 'Unknown peak'}
+                        {m?.name ?? 'Unknown peak'}
                       </p>
                       <p className="text-xs text-gray-400">
-                        {mountain?.altitude && `${mountain.altitude}m · `}
+                        {m?.altitude && `${m.altitude}m · `}
                         {new Date(hike.hikedAt).toLocaleDateString('de-AT', {
                           day: 'numeric',
                           month: 'short',
