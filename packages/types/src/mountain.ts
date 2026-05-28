@@ -9,6 +9,7 @@ export interface Mountain {
   region?: Region;
   difficulty: MountainDifficulty | null;
   description: string | null;
+  routeNotes: string | null;
   imageUrl: string | null;
   externalId: string | null;
   createdAt: string;

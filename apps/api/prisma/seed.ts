@@ -56,6 +56,7 @@ interface MountainSeed {
   regionId: string;
   difficulty: Difficulty;
   description?: string;
+  routeNotes?: string;
   externalId: string;
 }
 
@@ -159,6 +160,7 @@ const mountains: MountainSeed[] = [
     regionId: 'bregenzerwald',
     difficulty: 'easy',
     description: 'A friendly local summit above Alberschwende with meadows, forest paths and broad valley views.',
+    routeNotes: 'Usually climbed from Alberschwende via forest roads and signed meadow trails. The route is uncomplicated and well suited to half-day hikes in mixed weather.',
     externalId: 'brueggelekopf',
   },
   {
@@ -169,6 +171,7 @@ const mountains: MountainSeed[] = [
     regionId: 'bregenzerwald',
     difficulty: 'easy',
     description: 'Popular panoramic mountain above Andelsbuch and Bezau, ideal for a shorter cable-car-assisted walk.',
+    routeNotes: 'A very common approach uses the cable car from Bezau before continuing on wide marked paths. In summer the ridge is easy to follow and works well for relaxed panoramic hikes.',
     externalId: 'niedere',
   },
   {
@@ -261,6 +264,7 @@ const mountains: MountainSeed[] = [
     regionId: 'kleinwalsertal',
     difficulty: 'easy',
     description: 'Well-loved cable-car summit above Riezlern with an easy ridge walk and classic Kleinwalsertal views.',
+    routeNotes: 'The Kanzelwandbahn makes this one of the easiest high viewpoints in the valley. From the top station, follow the signed ridge paths and watch the weather because the area is very exposed.',
     externalId: 'kanzelwand',
   },
 
@@ -425,6 +429,7 @@ const mountains: MountainSeed[] = [
     regionId: 'montafon',
     difficulty: 'easy',
     description: 'Gentle summit above Gargellen with big views and a rewarding half-day tour for less technical hikers.',
+    routeNotes: 'Typically reached from Gargellen on marked alpine paths. The terrain stays non-technical in dry conditions, but allow extra time if you extend the walk across nearby ridges.',
     externalId: 'muttjoechle',
   },
   {
@@ -609,6 +614,7 @@ const mountains: MountainSeed[] = [
     regionId: 'raetikon',
     difficulty: 'moderate',
     description: 'Beloved summit above the Walgau, known for its grassy ridge and huge view over Bludenz and the Rätikon wall.',
+    routeNotes: 'Usually climbed from the Furkla or Gapfohl area on a steep but straightforward trail. The final ridge is scenic rather than technical, though it deserves care when wet.',
     externalId: 'mondspitze',
   },
 
@@ -621,6 +627,7 @@ const mountains: MountainSeed[] = [
     regionId: 'rheintal',
     difficulty: 'easy',
     description: 'Bregenz\'s beloved local mountain overlooking Lake Constance, accessible by cable car or forest trail.',
+    routeNotes: 'The classic ascent starts from Bregenz or the Pfänderbahn top station. Trails are well signposted, family-friendly and easy to combine with the wildlife park or ridge walks.',
     externalId: 'pfaender',
   },
   {
@@ -661,6 +668,7 @@ const mountains: MountainSeed[] = [
     regionId: 'rheintal',
     difficulty: 'easy',
     description: 'Dornbirn\'s local mountain with a dramatic viewing platform and a very approachable walk from the cable car station.',
+    routeNotes: 'Most visitors ride the Karren cable car and continue on broad walking paths. You can also hike up from Dornbirn on steeper forest trails; the summit area is ideal for short scenic outings.',
     externalId: 'karren',
   },
   {
@@ -693,6 +701,56 @@ const mountains: MountainSeed[] = [
     description: 'Small panoramic hill above the Vorderland, popular for sunset walks and quick local outings.',
     externalId: 'kapf-vorderland',
   },
+  {
+    name: 'Losenpass',
+    altitude: 1140,
+    latitude: 47.309,
+    longitude: 9.694,
+    regionId: 'rheintal',
+    difficulty: 'easy',
+    description: 'A small local viewpoint above the Vorderland, ideal for short evening hikes and forest walks.',
+    externalId: 'losenpass',
+  },
+  {
+    name: 'First',
+    altitude: 1096,
+    latitude: 47.471,
+    longitude: 9.844,
+    regionId: 'rheintal',
+    difficulty: 'easy',
+    description: 'Gentle local summit on the Pfänder ridge with broad views over the lower Rhine Valley and Lake Constance.',
+    externalId: 'first-pfaenderruecken',
+  },
+  {
+    name: 'Farnach',
+    altitude: 1217,
+    latitude: 47.456,
+    longitude: 9.872,
+    regionId: 'rheintal',
+    difficulty: 'easy',
+    description: 'Quiet hill and pasture area between the Bregenzerwald and Lake Constance edge, great for relaxed outings.',
+    externalId: 'farnach',
+  },
+  {
+    name: 'Mörzelspitze',
+    altitude: 1830,
+    latitude: 47.282,
+    longitude: 9.774,
+    regionId: 'bregenzerwald',
+    difficulty: 'moderate',
+    description: 'A rewarding ridge summit above Ebnit with wide-open views over Dornbirn, the Freschen group and the valley floor.',
+    externalId: 'moerzelspitze',
+  },
+  {
+    name: 'Bödele',
+    altitude: 1140,
+    latitude: 47.413,
+    longitude: 9.81,
+    regionId: 'rheintal',
+    difficulty: 'easy',
+    description: 'A classic local pass and walking area above Dornbirn, useful for easy hikes with quick access from the valley.',
+    externalId: 'boedele',
+  },
 ];
 
 async function main() {
@@ -722,6 +780,7 @@ async function main() {
         longitude: m.longitude,
         difficulty: m.difficulty,
         description: m.description,
+        routeNotes: m.routeNotes,
       },
       create: {
         name: m.name,
@@ -732,6 +791,7 @@ async function main() {
         regionId: m.regionId,
         difficulty: m.difficulty,
         description: m.description,
+        routeNotes: m.routeNotes,
         externalId: m.externalId,
       },
     });
