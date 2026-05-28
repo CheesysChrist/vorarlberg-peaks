@@ -54,6 +54,7 @@ model Mountain {
   regionId    String
   difficulty  Difficulty?
   description String?
+  routeNotes  String?
   imageUrl    String?
   externalId  String?    @unique
   createdAt   DateTime   @default(now())

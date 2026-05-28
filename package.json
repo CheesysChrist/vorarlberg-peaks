@@ -12,7 +12,7 @@
     "build": "pnpm --filter @vorarlberg-peaks/types build && pnpm --filter api exec prisma generate && pnpm --filter api build",
     "start": "pnpm run build && pnpm --filter api exec prisma migrate deploy && pnpm --filter api exec prisma db seed && node apps/api/dist/main",
     "lint": "pnpm -r lint",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm --filter @vorarlberg-peaks/types build && pnpm -r typecheck",
     "test": "pnpm -r test"
   },
   "devDependencies": {

@@ -79,6 +79,14 @@ export function MountainDetailPanel({ mountain, hike, onClose }: MountainDetailP
             <p className="text-sm text-gray-600 leading-relaxed">{mountain.description}</p>
           )}
 
+          {/* Route notes */}
+          {mountain.routeNotes && (
+            <div className="rounded-xl border border-blue-100 bg-blue-50/70 p-3 space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Route notes</p>
+              <p className="text-sm leading-relaxed text-gray-700">{mountain.routeNotes}</p>
+            </div>
+          )}
+
           {/* Hike details */}
           {mountain.hiked && (
             <div className="bg-emerald-50 rounded-xl p-3 space-y-1.5 border border-emerald-100">
