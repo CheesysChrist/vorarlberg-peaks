@@ -127,7 +127,7 @@ export default function DashboardPage() {
         </>
       ) : (
         <div className="flex-1 overflow-y-auto">
-          <AchievementsView hikes={hikes ?? []} mountains={mountains} totalCount={totalCount} />
+          <AchievementsView hikes={hikes ?? []} mountains={mountains} />
         </div>
       )}
     </>
@@ -201,7 +201,7 @@ export default function DashboardPage() {
           )}
           {mobilePanel === 'achievements' && (
             <div className="h-full overflow-y-auto bg-gray-50">
-              <AchievementsView hikes={hikes ?? []} mountains={mountains} totalCount={totalCount} />
+              <AchievementsView hikes={hikes ?? []} mountains={mountains} />
             </div>
           )}
         </div>

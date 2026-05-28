@@ -2,18 +2,28 @@
 
 import type { Hike, MountainWithHikeStatus } from '@vorarlberg-peaks/types';
 import { computeStats, computeAchievements } from '@/lib/achievements';
-import { useLeaderboard } from '@/lib/queries';
+import { useLeaderboard, useAchievements } from '@/lib/queries';
+import { useAuth } from '@/lib/auth';
 
 interface AchievementsViewProps {
   hikes: Hike[];
   mountains: MountainWithHikeStatus[];
-  totalCount: number;
 }
 
-export function AchievementsView({ hikes, mountains, totalCount }: AchievementsViewProps) {
+export function AchievementsView({ hikes, mountains }: AchievementsViewProps) {
+  const { isAuthenticated } = useAuth();
   const { data: leaderboard } = useLeaderboard();
+  const { data: persistedAchievements } = useAchievements(isAuthenticated);
   const stats = computeStats(hikes, mountains);
-  const achievements = computeAchievements(hikes, mountains);
+
+  const computed = computeAchievements(hikes, mountains);
+  const unlockedKeys = new Set<string>((persistedAchievements ?? []).map((a) => a.key));
+  const achievements = computed.map((a) =>
+    isAuthenticated && persistedAchievements
+      ? { ...a, unlocked: unlockedKeys.has(a.id) }
+      : a,
+  );
+
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
   const sorted = [...achievements].sort((a, b) => Number(b.unlocked) - Number(a.unlocked));
 

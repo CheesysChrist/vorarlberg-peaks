@@ -6,6 +6,7 @@ import { MountainsModule } from './mountains/mountains.module';
 import { RegionsModule } from './regions/regions.module';
 import { HikesModule } from './hikes/hikes.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
+import { AchievementsModule } from './achievements/achievements.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { LeaderboardModule } from './leaderboard/leaderboard.module';
     RegionsModule,
     HikesModule,
     LeaderboardModule,
+    AchievementsModule,
   ],
 })
 export class AppModule {}
