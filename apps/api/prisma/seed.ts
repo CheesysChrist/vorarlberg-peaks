@@ -151,6 +151,36 @@ const mountains: MountainSeed[] = [
     description: 'Popular family hike above Egg with sweeping views across the Bregenzerwald.',
     externalId: 'winterstaude',
   },
+  {
+    name: 'Brüggelekopf',
+    altitude: 1182,
+    latitude: 47.412,
+    longitude: 9.884,
+    regionId: 'bregenzerwald',
+    difficulty: 'easy',
+    description: 'A friendly local summit above Alberschwende with meadows, forest paths and broad valley views.',
+    externalId: 'brueggelekopf',
+  },
+  {
+    name: 'Niedere',
+    altitude: 1711,
+    latitude: 47.389,
+    longitude: 9.88,
+    regionId: 'bregenzerwald',
+    difficulty: 'easy',
+    description: 'Popular panoramic mountain above Andelsbuch and Bezau, ideal for a shorter cable-car-assisted walk.',
+    externalId: 'niedere',
+  },
+  {
+    name: 'Lug',
+    altitude: 1762,
+    latitude: 47.373,
+    longitude: 9.823,
+    regionId: 'bregenzerwald',
+    difficulty: 'moderate',
+    description: 'Quiet grassy summit above the Vorderwald with lovely views toward the Rhine Valley and Lake Constance.',
+    externalId: 'lug-bregenzerwald',
+  },
 
   // ── Kleinwalsertal ───────────────────────────────────────────────────────
   {
@@ -223,6 +253,16 @@ const mountains: MountainSeed[] = [
     description: 'Green grassy summit above Baad, rewarding walkers with great views of the Widderstein.',
     externalId: 'gruenhorn-kleinwalsertal',
   },
+  {
+    name: 'Kanzelwand',
+    altitude: 2058,
+    latitude: 47.344,
+    longitude: 10.214,
+    regionId: 'kleinwalsertal',
+    difficulty: 'easy',
+    description: 'Well-loved cable-car summit above Riezlern with an easy ridge walk and classic Kleinwalsertal views.',
+    externalId: 'kanzelwand',
+  },
 
   // ── Arlberg ──────────────────────────────────────────────────────────────
   {
@@ -284,6 +324,16 @@ const mountains: MountainSeed[] = [
     difficulty: 'hard',
     description: 'Prominent rocky peak above the famous Flexen Pass road.',
     externalId: 'flexenspitze',
+  },
+  {
+    name: 'Rüfikopf',
+    altitude: 2362,
+    latitude: 47.164,
+    longitude: 10.143,
+    regionId: 'arlberg',
+    difficulty: 'easy',
+    description: 'Accessible Lech viewpoint reached by cable car, perfect for a shorter scenic summit outing.',
+    externalId: 'ruefikopf',
   },
 
   // ── Montafon ─────────────────────────────────────────────────────────────
@@ -366,6 +416,36 @@ const mountains: MountainSeed[] = [
     difficulty: 'moderate',
     description: 'Classic high-alpine col linking Montafon and the Silvretta, with scenic glacier paths.',
     externalId: 'hochjoch-montafon',
+  },
+  {
+    name: 'Muttjöchle',
+    altitude: 2074,
+    latitude: 47.056,
+    longitude: 9.932,
+    regionId: 'montafon',
+    difficulty: 'easy',
+    description: 'Gentle summit above Gargellen with big views and a rewarding half-day tour for less technical hikers.',
+    externalId: 'muttjoechle',
+  },
+  {
+    name: 'Kreuzjoch',
+    altitude: 2261,
+    latitude: 47.075,
+    longitude: 9.993,
+    regionId: 'montafon',
+    difficulty: 'moderate',
+    description: 'Classic Montafon walking summit above Schruns with broad panoramas over the valley and side ranges.',
+    externalId: 'kreuzjoch-montafon',
+  },
+  {
+    name: 'Tschaggunser Mittagsspitze',
+    altitude: 2168,
+    latitude: 47.035,
+    longitude: 9.905,
+    regionId: 'montafon',
+    difficulty: 'moderate',
+    description: 'Striking lookout above Tschagguns, reached by a steep but manageable trail with superb valley views.',
+    externalId: 'tschaggunser-mittagsspitze',
   },
 
   // ── Silvretta ────────────────────────────────────────────────────────────
@@ -521,6 +601,16 @@ const mountains: MountainSeed[] = [
     description: 'A classic Rätikon viewpoint above Bludenz, feasible as a half-day hike.',
     externalId: 'garsellakopf',
   },
+  {
+    name: 'Mondspitze',
+    altitude: 1967,
+    latitude: 47.151,
+    longitude: 9.706,
+    regionId: 'raetikon',
+    difficulty: 'moderate',
+    description: 'Beloved summit above the Walgau, known for its grassy ridge and huge view over Bludenz and the Rätikon wall.',
+    externalId: 'mondspitze',
+  },
 
   // ── Rhine Valley & Pfänder ───────────────────────────────────────────────
   {
@@ -562,6 +652,46 @@ const mountains: MountainSeed[] = [
     difficulty: 'moderate',
     description: 'A fine ridge walk above the Bregenzerach valley connecting the Bregenzerwald foothills.',
     externalId: 'baumgartenschneid',
+  },
+  {
+    name: 'Karren',
+    altitude: 971,
+    latitude: 47.389,
+    longitude: 9.744,
+    regionId: 'rheintal',
+    difficulty: 'easy',
+    description: 'Dornbirn\'s local mountain with a dramatic viewing platform and a very approachable walk from the cable car station.',
+    externalId: 'karren',
+  },
+  {
+    name: 'Hohe Kugel',
+    altitude: 1645,
+    latitude: 47.336,
+    longitude: 9.739,
+    regionId: 'rheintal',
+    difficulty: 'moderate',
+    description: 'A classic Rhine Valley summit above Dornbirn, rewarding hikers with one of the best views over the lowlands.',
+    externalId: 'hohe-kugel',
+  },
+  {
+    name: 'Staufen',
+    altitude: 1465,
+    latitude: 47.398,
+    longitude: 9.781,
+    regionId: 'rheintal',
+    difficulty: 'easy',
+    description: 'Short but satisfying summit above the Lake Constance edge, often combined with nearby local ridges.',
+    externalId: 'staufen-rheintal',
+  },
+  {
+    name: 'Kapf',
+    altitude: 1153,
+    latitude: 47.287,
+    longitude: 9.656,
+    regionId: 'rheintal',
+    difficulty: 'easy',
+    description: 'Small panoramic hill above the Vorderland, popular for sunset walks and quick local outings.',
+    externalId: 'kapf-vorderland',
   },
 ];
 
