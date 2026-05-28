@@ -2,6 +2,7 @@
 
 import { useRegions } from '@/lib/queries';
 import type { Region } from '@vorarlberg-peaks/types';
+import { t } from '@/lib/i18n';
 
 interface Filters {
   regionId?: string;
@@ -24,7 +25,7 @@ export function FilterBar({ filters, onChange, totalCount, hikedCount }: FilterB
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-500">
-          <span className="font-semibold text-emerald-600">{hikedCount}</span> / {totalCount} summits reached
+          <span className="font-semibold text-emerald-600">{hikedCount}</span> / {totalCount} {t.dashboard.counts.summitsReached}
         </div>
         <div className="h-2 w-32 bg-gray-100 rounded-full overflow-hidden">
           <div
@@ -37,7 +38,7 @@ export function FilterBar({ filters, onChange, totalCount, hikedCount }: FilterB
       <div className="flex gap-2 flex-wrap">
         <input
           type="text"
-          placeholder="Search mountains..."
+          placeholder={t.filters.searchPlaceholder}
           value={filters.search ?? ''}
           onChange={(e) => onChange({ ...filters, search: e.target.value || undefined })}
           className="flex-1 min-w-36 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -48,7 +49,7 @@ export function FilterBar({ filters, onChange, totalCount, hikedCount }: FilterB
           onChange={(e) => onChange({ ...filters, regionId: e.target.value || undefined })}
           className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
         >
-          <option value="">All regions</option>
+          <option value="">{t.filters.allRegions}</option>
           {regions?.map((r: Region) => (
             <option key={r.id} value={r.id}>{r.name}</option>
           ))}
@@ -59,20 +60,20 @@ export function FilterBar({ filters, onChange, totalCount, hikedCount }: FilterB
           onChange={(e) => onChange({ ...filters, difficulty: e.target.value || undefined })}
           className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
         >
-          <option value="">All levels</option>
-          <option value="easy">Easy</option>
-          <option value="moderate">Moderate</option>
-          <option value="hard">Hard</option>
-          <option value="expert">Expert</option>
+          <option value="">{t.filters.allLevels}</option>
+          <option value="easy">{t.common.difficulty.easy}</option>
+          <option value="moderate">{t.common.difficulty.moderate}</option>
+          <option value="hard">{t.common.difficulty.hard}</option>
+          <option value="expert">{t.common.difficulty.expert}</option>
         </select>
       </div>
 
       {/* Hiked filter toggle */}
       <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-medium">
         {([
-          { label: 'All peaks', value: undefined },
-          { label: '✓ Summited', value: true },
-          { label: '○ Todo', value: false },
+          { label: t.filters.allPeaks, value: undefined },
+          { label: t.filters.summited, value: true },
+          { label: t.filters.todo, value: false },
         ] as { label: string; value: boolean | undefined }[]).map(({ label, value }) => (
           <button
             key={String(value)}

@@ -5,6 +5,7 @@ import type { Hike, MountainWithHikeStatus } from '@vorarlberg-peaks/types';
 import { useLogHike, useRemoveHike } from '@/lib/queries';
 import { ConfettiBurst } from '@/components/hikes/Confetti';
 import { useToast } from '@/lib/toast';
+import { t } from '@/lib/i18n';
 
 interface LogHikeModalProps {
   mountain: MountainWithHikeStatus;
@@ -13,13 +14,13 @@ interface LogHikeModalProps {
 }
 
 const difficultyLabel: Record<string, string> = {
-  easy: 'Easy',
-  moderate: 'Moderate',
-  hard: 'Hard',
-  expert: 'Expert',
+  easy: t.common.difficulty.easy,
+  moderate: t.common.difficulty.moderate,
+  hard: t.common.difficulty.hard,
+  expert: t.common.difficulty.expert,
 };
 
-const ratingLabels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Amazing'];
+const ratingLabels = t.hikeModal.ratingLabels;
 
 export function LogHikeModal({ mountain, existingHike, onClose }: LogHikeModalProps) {
   const today = new Date().toISOString().split('T')[0];
@@ -56,21 +57,21 @@ export function LogHikeModal({ mountain, existingHike, onClose }: LogHikeModalPr
       {
         onSuccess: () => {
           if (!isEdit) {
-            toast(`${mountain.name} summited! 🎉`);
+            toast(`${mountain.name} ${t.hikeModal.toast.summited}`);
             setShowConfetti(true);
           } else {
-            toast('Summit updated');
+            toast(t.hikeModal.toast.updated);
             onClose();
           }
         },
-        onError: () => toast('Something went wrong', 'error'),
+        onError: () => toast(t.common.errorGeneric, 'error'),
       }
     );
   };
 
   const handleRemove = () => {
     removeHike.mutate(mountain.id, {
-      onSuccess: () => { toast('Hike removed'); onClose(); },
+      onSuccess: () => { toast(t.hikeModal.toast.removed); onClose(); },
       onError: () => toast('Something went wrong', 'error'),
     });
   };
@@ -93,7 +94,7 @@ export function LogHikeModal({ mountain, existingHike, onClose }: LogHikeModalPr
           <div className="flex items-start justify-between mb-5">
             <div>
               <h2 className="text-lg font-bold text-gray-900">
-                {isEdit ? 'Edit Summit' : 'Log Summit'}
+                {isEdit ? t.hikeModal.editTitle : t.hikeModal.logTitle}
               </h2>
               <p className="text-sm text-gray-500 mt-0.5">
                 {mountain.name}
@@ -118,7 +119,7 @@ export function LogHikeModal({ mountain, existingHike, onClose }: LogHikeModalPr
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Summit date
+                {t.hikeModal.summitDate}
               </label>
               <input
                 type="date"
@@ -132,7 +133,7 @@ export function LogHikeModal({ mountain, existingHike, onClose }: LogHikeModalPr
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Rating <span className="text-gray-400 font-normal">(optional)</span>
+                {t.hikeModal.rating} <span className="text-gray-400 font-normal">({t.hikeModal.optional})</span>
               </label>
               <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -157,12 +158,12 @@ export function LogHikeModal({ mountain, existingHike, onClose }: LogHikeModalPr
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Notes <span className="text-gray-400 font-normal">(optional)</span>
+                {t.hikeModal.notes} <span className="text-gray-400 font-normal">({t.hikeModal.optional})</span>
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="How was the hike? Any memorable moments..."
+                placeholder={t.hikeModal.notesPlaceholder}
                 rows={3}
                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
               />
@@ -175,14 +176,14 @@ export function LogHikeModal({ mountain, existingHike, onClose }: LogHikeModalPr
                 disabled={isBusy}
                 className="flex-1 border border-gray-200 text-gray-600 rounded-xl py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
               >
-                Cancel
+                {t.common.buttons.cancel}
               </button>
               <button
                 type="submit"
                 disabled={isBusy}
                 className="flex-1 bg-emerald-500 text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-60"
               >
-                {logHike.isPending ? 'Saving...' : isEdit ? 'Save changes' : 'Log summit ✓'}
+                {logHike.isPending ? t.hikeModal.saving : isEdit ? t.common.buttons.saveChanges : `${t.mountain.logSummit} ✓`}
               </button>
             </div>
 
@@ -193,7 +194,7 @@ export function LogHikeModal({ mountain, existingHike, onClose }: LogHikeModalPr
                 disabled={isBusy}
                 className="w-full text-sm text-red-400 hover:text-red-600 py-1.5 transition-colors disabled:opacity-50"
               >
-                {removeHike.isPending ? 'Removing...' : 'Remove this hike'}
+                {removeHike.isPending ? t.hikeModal.removing : t.hikeModal.removeThisHike}
               </button>
             )}
           </form>

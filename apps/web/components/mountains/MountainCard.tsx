@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import type { Hike, MountainWithHikeStatus } from '@vorarlberg-peaks/types';
 import { LogHikeModal } from '@/components/hikes/LogHikeModal';
+import { t } from '@/lib/i18n';
 
 const difficultyLabel: Record<string, { label: string; color: string }> = {
-  easy: { label: 'Easy', color: 'text-green-600 bg-green-50' },
-  moderate: { label: 'Moderate', color: 'text-yellow-700 bg-yellow-50' },
-  hard: { label: 'Hard', color: 'text-orange-600 bg-orange-50' },
-  expert: { label: 'Expert', color: 'text-red-600 bg-red-50' },
+  easy: { label: t.common.difficulty.easy, color: 'text-green-600 bg-green-50' },
+  moderate: { label: t.common.difficulty.moderate, color: 'text-yellow-700 bg-yellow-50' },
+  hard: { label: t.common.difficulty.hard, color: 'text-orange-600 bg-orange-50' },
+  expert: { label: t.common.difficulty.expert, color: 'text-red-600 bg-red-50' },
 };
 
 interface MountainCardProps {
@@ -50,7 +51,7 @@ export function MountainCard({ mountain, hike, selected, onClick }: MountainCard
                 ? 'bg-emerald-500 text-white hover:bg-emerald-600'
                 : 'bg-gray-100 text-gray-400 hover:bg-emerald-100 hover:text-emerald-600',
             ].join(' ')}
-            title={mountain.hiked ? 'Edit hike' : 'Log summit'}
+            title={mountain.hiked ? t.mountain.editSummit : t.mountain.logSummit}
           >
             {mountain.hiked ? '✓' : '+'}
           </button>

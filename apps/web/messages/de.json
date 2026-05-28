@@ -1,0 +1,89 @@
+{
+  "common": {
+    "difficulty": {
+      "easy": "Leicht",
+      "moderate": "Mittel",
+      "hard": "Schwer",
+      "expert": "Alpin"
+    },
+    "buttons": {
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "saveChanges": "Änderungen speichern",
+      "remove": "Entfernen",
+      "signOut": "Abmelden"
+    },
+    "loading": "Lädt…",
+    "errorGeneric": "Etwas ist schiefgelaufen"
+  },
+  "dashboard": {
+    "title": "Vorarlberg Peaks",
+    "subtitle": "Dein Bergtagebuch",
+    "tabs": {
+      "peaks": "Gipfel",
+      "achievements": "Erfolge"
+    },
+    "mobileTabs": {
+      "map": "Karte",
+      "peaks": "Gipfel",
+      "stats": "Stats"
+    },
+    "sort": {
+      "altitudeDesc": "Höhe ↓",
+      "altitudeAsc": "Höhe ↑",
+      "nameAsc": "Name A–Z",
+      "recentlyHiked": "Zuletzt bestiegen"
+    },
+    "counts": {
+      "peaks": "Gipfel",
+      "summitsReached": "Gipfel geschafft",
+      "summitsShort": "Gipfel"
+    },
+    "empty": "Keine Berge gefunden"
+  },
+  "filters": {
+    "searchPlaceholder": "Berge suchen…",
+    "allRegions": "Alle Regionen",
+    "allLevels": "Alle Schwierigkeiten",
+    "allPeaks": "Alle Gipfel",
+    "summited": "✓ Bestiegen",
+    "todo": "○ Offen"
+  },
+  "map": {
+    "clickToLog": "Zum Eintragen anklicken"
+  },
+  "mountain": {
+    "routeNotes": "Routenhinweise",
+    "yourSummit": "Dein Eintrag",
+    "logSummit": "Gipfel eintragen",
+    "editSummit": "Eintrag bearbeiten",
+    "removeHike": "Tour löschen",
+    "editHikeTitle": "Tour bearbeiten"
+  },
+  "auth": {
+    "signIn": "Anmelden",
+    "createAccount": "Konto erstellen",
+    "email": "E-Mail",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "tagline": "Halte jeden Gipfel fest, den du in Vorarlberg erreichst."
+  },
+  "hikeModal": {
+    "logTitle": "Gipfel eintragen",
+    "editTitle": "Eintrag bearbeiten",
+    "summitDate": "Datum",
+    "rating": "Bewertung",
+    "optional": "optional",
+    "notes": "Notizen",
+    "notesPlaceholder": "Wie war die Tour? Gab es besondere Momente?",
+    "saving": "Speichert…",
+    "removing": "Wird gelöscht…",
+    "removeThisHike": "Diesen Eintrag löschen",
+    "toast": {
+      "summited": "bestiegen! 🎉",
+      "updated": "Eintrag aktualisiert",
+      "removed": "Tour gelöscht"
+    },
+    "ratingLabels": ["", "Schwach", "Okay", "Gut", "Sehr gut", "Großartig"]
+  }
+}

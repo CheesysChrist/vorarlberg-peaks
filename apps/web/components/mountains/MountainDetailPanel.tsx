@@ -5,12 +5,13 @@ import type { Hike, MountainWithHikeStatus } from '@vorarlberg-peaks/types';
 import { useRemoveHike } from '@/lib/queries';
 import { LogHikeModal } from '@/components/hikes/LogHikeModal';
 import { useToast } from '@/lib/toast';
+import { t } from '@/lib/i18n';
 
 const difficultyLabel: Record<string, { label: string; color: string }> = {
-  easy: { label: 'Easy', color: 'text-green-700 bg-green-100' },
-  moderate: { label: 'Moderate', color: 'text-yellow-700 bg-yellow-100' },
-  hard: { label: 'Hard', color: 'text-orange-700 bg-orange-100' },
-  expert: { label: 'Expert', color: 'text-red-700 bg-red-100' },
+  easy: { label: t.common.difficulty.easy, color: 'text-green-700 bg-green-100' },
+  moderate: { label: t.common.difficulty.moderate, color: 'text-yellow-700 bg-yellow-100' },
+  hard: { label: t.common.difficulty.hard, color: 'text-orange-700 bg-orange-100' },
+  expert: { label: t.common.difficulty.expert, color: 'text-red-700 bg-red-100' },
 };
 
 interface MountainDetailPanelProps {
@@ -82,7 +83,7 @@ export function MountainDetailPanel({ mountain, hike, onClose }: MountainDetailP
           {/* Route notes */}
           {mountain.routeNotes && (
             <div className="rounded-xl border border-blue-100 bg-blue-50/70 p-3 space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Route notes</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">{t.mountain.routeNotes}</p>
               <p className="text-sm leading-relaxed text-gray-700">{mountain.routeNotes}</p>
             </div>
           )}
@@ -91,7 +92,7 @@ export function MountainDetailPanel({ mountain, hike, onClose }: MountainDetailP
           {mountain.hiked && (
             <div className="bg-emerald-50 rounded-xl p-3 space-y-1.5 border border-emerald-100">
               <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide">
-                Your summit
+                {t.mountain.yourSummit}
               </p>
               {mountain.hikedAt && (
                 <p className="text-sm text-gray-700">
@@ -123,16 +124,16 @@ export function MountainDetailPanel({ mountain, hike, onClose }: MountainDetailP
                   onClick={() => setShowModal(true)}
                   className="flex-1 bg-emerald-500 text-white rounded-xl py-2 text-sm font-semibold hover:bg-emerald-600 transition-colors"
                 >
-                  Edit summit
+                  {t.mountain.editSummit}
                 </button>
                 <button
                   onClick={() => removeHike.mutate(mountain.id, {
-                    onSuccess: () => toast('Hike removed'),
-                    onError: () => toast('Something went wrong', 'error'),
+                    onSuccess: () => toast(t.hikeModal.toast.removed),
+                    onError: () => toast(t.common.errorGeneric, 'error'),
                   })}
                   disabled={removeHike.isPending}
                   className="px-3 py-2 rounded-xl border border-gray-200 text-red-400 hover:text-red-600 hover:border-red-200 text-sm transition-colors disabled:opacity-50"
-                  title="Remove hike"
+                  title={t.mountain.removeHike}
                 >
                   ✕
                 </button>
@@ -142,7 +143,7 @@ export function MountainDetailPanel({ mountain, hike, onClose }: MountainDetailP
                 onClick={() => setShowModal(true)}
                 className="flex-1 bg-gray-900 text-white rounded-xl py-2 text-sm font-semibold hover:bg-gray-700 transition-colors"
               >
-                Log summit
+                {t.mountain.logSummit}
               </button>
             )}
           </div>

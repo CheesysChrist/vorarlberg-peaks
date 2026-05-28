@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { apiClient } from '@/lib/api-client';
 import type { User } from '@vorarlberg-peaks/types';
+import { t as texts } from '@/lib/i18n';
 
 interface AuthModalProps {
   onClose?: () => void;
@@ -30,7 +31,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
       onClose?.();
     } catch (err: any) {
       const msg = err?.response?.data?.message;
-      setError(Array.isArray(msg) ? msg.join(', ') : (msg ?? 'Something went wrong'));
+      setError(Array.isArray(msg) ? msg.join(', ') : (msg ?? texts.common.errorGeneric));
     } finally {
       setLoading(false);
     }
@@ -46,24 +47,24 @@ export function AuthModal({ onClose }: AuthModalProps) {
           </div>
 
           <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
-            {(['login', 'register'] as const).map((t) => (
+            {(['login', 'register'] as const).map((tabKey) => (
               <button
-                key={t}
+                key={tabKey}
                 type="button"
-                onClick={() => { setTab(t); setError(''); }}
+                onClick={() => { setTab(tabKey); setError(''); }}
                 className={[
                   'flex-1 py-1.5 text-sm font-medium rounded-md transition-all',
-                  tab === t ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700',
+                  tab === tabKey ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700',
                 ].join(' ')}
               >
-                {t === 'login' ? 'Sign in' : 'Create account'}
+                {tabKey === 'login' ? texts.auth.signIn : texts.auth.createAccount}
               </button>
             ))}
           </div>
 
           <form onSubmit={submit} className="flex flex-col gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">{texts.auth.email}</label>
               <input
                 type="email"
                 required
@@ -76,7 +77,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
 
             {tab === 'register' && (
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Username</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">{texts.auth.username}</label>
                 <input
                   type="text"
                   required
@@ -89,7 +90,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
             )}
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">{texts.auth.password}</label>
               <input
                 type="password"
                 required
@@ -112,13 +113,13 @@ export function AuthModal({ onClose }: AuthModalProps) {
               disabled={loading}
               className="mt-1 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors"
             >
-              {loading ? 'Loading…' : tab === 'login' ? 'Sign in' : 'Create account'}
+              {loading ? texts.common.loading : tab === 'login' ? texts.auth.signIn : texts.auth.createAccount}
             </button>
           </form>
         </div>
 
         <p className="text-center text-xs text-gray-400 px-6 py-4 border-t border-gray-100">
-          Track every summit you conquer in Vorarlberg.
+          {texts.auth.tagline}
         </p>
       </div>
     </div>

@@ -4,14 +4,15 @@ import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import type { MountainWithHikeStatus } from '@vorarlberg-peaks/types';
+import { t } from '@/lib/i18n';
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? '';
 
 const DIFFICULTY_STYLE: Record<string, { color: string; label: string }> = {
-  easy:     { color: '#16a34a', label: 'Easy' },
-  moderate: { color: '#ca8a04', label: 'Moderate' },
-  hard:     { color: '#ea580c', label: 'Hard' },
-  expert:   { color: '#dc2626', label: 'Expert' },
+  easy:     { color: '#16a34a', label: t.common.difficulty.easy },
+  moderate: { color: '#ca8a04', label: t.common.difficulty.moderate },
+  hard:     { color: '#ea580c', label: t.common.difficulty.hard },
+  expert:   { color: '#dc2626', label: t.common.difficulty.expert },
 };
 
 function escapeHtml(value: string): string {
@@ -52,7 +53,7 @@ function buildPopupHTML(mountain: MountainWithHikeStatus): string {
           ✓ ${hikeDate}
         </div>
       ` : !mountain.hiked ? `
-        <div style="margin-top:7px;font-size:11px;color:#9ca3af">Click to log this summit</div>
+        <div style="margin-top:7px;font-size:11px;color:#9ca3af">${escapeHtml(t.map.clickToLog)}</div>
       ` : ''}
     </div>
   `;
