@@ -176,6 +176,7 @@ export default function DashboardPage() {
             mountains={mountains}
             onMountainSelect={handleMountainSelect}
             fitKey={JSON.stringify(filters)}
+            selectedMountainId={selectedMountain?.id}
           />
         </main>
       </div>
@@ -189,6 +190,7 @@ export default function DashboardPage() {
                 mountains={mountains}
                 onMountainSelect={handleMountainSelect}
                 fitKey={JSON.stringify(filters)}
+                selectedMountainId={selectedMountain?.id}
               />
             </div>
           )}
@@ -199,11 +201,6 @@ export default function DashboardPage() {
           )}
           {mobilePanel === 'achievements' && (
             <div className="h-full overflow-y-auto bg-gray-50">
-              {(() => {
-                // Switch the inner tab to achievements when this panel is open
-                if (activeTab !== 'achievements') setActiveTab('achievements');
-                return null;
-              })()}
               <AchievementsView hikes={hikes ?? []} mountains={mountains} totalCount={totalCount} />
             </div>
           )}
@@ -218,7 +215,11 @@ export default function DashboardPage() {
           ] as { key: MobilePanel; icon: string; label: string }[]).map(({ key, icon, label }) => (
             <button
               key={key}
-              onClick={() => setMobilePanel(key)}
+              onClick={() => {
+                setMobilePanel(key);
+                // Keep the sidebar tab in sync so switching back to Peaks shows the list
+                if (key === 'peaks') setActiveTab('peaks');
+              }}
               className={[
                 'flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 text-xs font-medium transition-colors',
                 mobilePanel === key ? 'text-emerald-600' : 'text-gray-500',

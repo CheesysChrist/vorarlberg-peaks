@@ -48,12 +48,14 @@ interface PeaksMapProps {
   onMountainSelect?: (mountain: MountainWithHikeStatus) => void;
   /** Opaque key — when it changes AND mountains < full set, map fits to them */
   fitKey?: string;
+  selectedMountainId?: string | null;
 }
 
-export function PeaksMap({ mountains, onMountainSelect, fitKey }: PeaksMapProps) {
+export function PeaksMap({ mountains, onMountainSelect, fitKey, selectedMountainId }: PeaksMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const markerElsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const prevFitKey = useRef<string | undefined>(undefined);
 
   useEffect(() => {
@@ -81,15 +83,17 @@ export function PeaksMap({ mountains, onMountainSelect, fitKey }: PeaksMapProps)
   useEffect(() => {
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
+    markerElsRef.current.clear();
 
     if (!mapRef.current) return;
 
     mountains.forEach((mountain) => {
       const el = document.createElement('div');
       el.className = [
-        'w-5 h-5 rounded-full border-2 border-white shadow-md cursor-pointer transition-transform hover:scale-125',
+        'w-5 h-5 rounded-full border-2 border-white shadow-md cursor-pointer transition-all',
         mountain.hiked ? 'bg-emerald-500' : 'bg-slate-400',
       ].join(' ');
+      markerElsRef.current.set(mountain.id, el);
 
       const popup = new mapboxgl.Popup({ offset: 14, closeButton: false, maxWidth: '220px' })
         .setHTML(buildPopupHTML(mountain));
@@ -111,6 +115,16 @@ export function PeaksMap({ mountains, onMountainSelect, fitKey }: PeaksMapProps)
     }
     prevFitKey.current = fitKey;
   }, [mountains, onMountainSelect, fitKey]);
+
+  // Update selected pin styling without re-rendering all markers
+  useEffect(() => {
+    markerElsRef.current.forEach((el, id) => {
+      const isSelected = id === selectedMountainId;
+      el.style.transform = isSelected ? 'scale(1.5)' : '';
+      el.style.boxShadow = isSelected ? '0 0 0 3px #10b981, 0 2px 8px rgba(0,0,0,0.3)' : '';
+      el.style.zIndex = isSelected ? '10' : '';
+    });
+  }, [selectedMountainId]);
 
   return <div ref={containerRef} className="w-full h-full rounded-xl overflow-hidden" />;
 }
