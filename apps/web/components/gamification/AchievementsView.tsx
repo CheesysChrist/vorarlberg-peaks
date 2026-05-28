@@ -1,0 +1,204 @@
+'use client';
+
+import type { Hike, MountainWithHikeStatus } from '@vorarlberg-peaks/types';
+import { computeStats, computeAchievements } from '@/lib/achievements';
+
+interface AchievementsViewProps {
+  hikes: Hike[];
+  mountains: MountainWithHikeStatus[];
+  totalCount: number;
+}
+
+export function AchievementsView({ hikes, mountains, totalCount }: AchievementsViewProps) {
+  const stats = computeStats(hikes, mountains);
+  const achievements = computeAchievements(hikes, mountains);
+  const unlockedCount = achievements.filter((a) => a.unlocked).length;
+  const sorted = [...achievements].sort((a, b) => Number(b.unlocked) - Number(a.unlocked));
+
+  const levelProgress =
+    stats.level.nextAt != null
+      ? ((stats.totalSummits - stats.level.currentMin) /
+          (stats.level.nextAt - stats.level.currentMin)) *
+        100
+      : 100;
+
+  return (
+    <div className="p-4 space-y-5 overflow-y-auto">
+      {/* Level card */}
+      <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-5 text-white">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="text-emerald-100 text-xs font-medium uppercase tracking-widest">
+              Level {stats.level.number}
+            </p>
+            <h2 className="text-2xl font-bold mt-1">{stats.level.title}</h2>
+          </div>
+          <div className="text-5xl select-none">⛰️</div>
+        </div>
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-xs text-emerald-100">
+            <span>{stats.totalSummits} summits</span>
+            {stats.level.nextAt != null ? (
+              <span>{stats.level.nextAt - stats.totalSummits} to next level</span>
+            ) : (
+              <span>Max level reached!</span>
+            )}
+          </div>
+          <div className="h-2 bg-emerald-400/40 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-white rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(levelProgress, 100)}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 gap-2">
+        <StatCard
+          label="Total elevation"
+          value={stats.totalElevation >= 1000 ? `${(stats.totalElevation / 1000).toFixed(1)}km` : `${stats.totalElevation}m`}
+          icon="📐"
+        />
+        <StatCard label="Regions explored" value={String(stats.regionsExplored)} icon="🗺️" />
+        <StatCard
+          label="Highest peak"
+          value={stats.highestPeak ? `${stats.highestPeak.altitude}m` : '—'}
+          sub={stats.highestPeak?.name}
+          icon="🏔️"
+        />
+        <StatCard
+          label="Achievements"
+          value={`${unlockedCount} / ${achievements.length}`}
+          icon="🏅"
+        />
+      </div>
+
+      {/* Achievements list */}
+      <div>
+        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+          Achievements
+        </h3>
+        <div className="space-y-2">
+          {sorted.map((a) => (
+            <div
+              key={a.id}
+              className={[
+                'flex items-center gap-3 rounded-xl p-3 border transition-all',
+                a.unlocked
+                  ? 'border-emerald-200 bg-emerald-50/70'
+                  : 'border-gray-100 bg-gray-50/70',
+              ].join(' ')}
+            >
+              <span
+                className={`text-2xl shrink-0 select-none ${!a.unlocked ? 'grayscale opacity-40' : ''}`}
+              >
+                {a.icon}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p
+                  className={`text-sm font-semibold ${
+                    a.unlocked ? 'text-gray-900' : 'text-gray-400'
+                  }`}
+                >
+                  {a.title}
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5">{a.description}</p>
+                {a.progress && !a.unlocked && (
+                  <div className="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-emerald-400 rounded-full transition-all"
+                      style={{ width: `${(a.progress.current / a.progress.total) * 100}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+              {a.unlocked ? (
+                <span className="shrink-0 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                  ✓
+                </span>
+              ) : a.progress ? (
+                <span className="shrink-0 text-xs text-gray-400 tabular-nums">
+                  {a.progress.current}/{a.progress.total}
+                </span>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      {hikes.length > 0 && (
+        <div>
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+            Recent Activity
+          </h3>
+          <div className="space-y-2">
+            {[...hikes]
+              .sort((a, b) => new Date(b.hikedAt).getTime() - new Date(a.hikedAt).getTime())
+              .slice(0, 5)
+              .map((hike) => {
+                const mountain = mountains.find((m) => m.id === hike.mountainId);
+                return (
+                  <div
+                    key={hike.id}
+                    className="flex items-center gap-3 bg-white rounded-xl border border-gray-200 p-3"
+                  >
+                    <span className="text-lg select-none shrink-0">🥾</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">
+                        {mountain?.name ?? 'Unknown peak'}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {mountain?.altitude && `${mountain.altitude}m · `}
+                        {new Date(hike.hikedAt).toLocaleDateString('de-AT', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </p>
+                    </div>
+                    {hike.rating && (
+                      <span className="shrink-0 text-sm text-amber-400">
+                        {'★'.repeat(hike.rating)}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
+      {/* Empty state */}
+      {stats.totalSummits === 0 && (
+        <p className="text-center text-sm text-gray-400 py-2">
+          Log your first hike to start earning achievements!
+        </p>
+      )}
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  sub,
+  icon,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  icon: string;
+}) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-3">
+      <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-1.5">
+        <span className="text-base select-none">{icon}</span>
+        <span>{label}</span>
+      </div>
+      <p className="text-xl font-bold text-gray-900 leading-none">{value}</p>
+      {sub && <p className="text-xs text-gray-400 mt-1 truncate">{sub}</p>}
+    </div>
+  );
+}
