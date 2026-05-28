@@ -66,7 +66,8 @@
     "email": "E-Mail",
     "username": "Benutzername",
     "password": "Passwort",
-    "tagline": "Halte jeden Gipfel fest, den du in Vorarlberg erreichst."
+    "tagline": "Halte jeden Gipfel fest, den du in Vorarlberg erreichst.",
+    "usernamePlaceholder": "bergsteiger42"
   },
   "hikeModal": {
     "logTitle": "Gipfel eintragen",
@@ -85,5 +86,59 @@
       "removed": "Tour gelöscht"
     },
     "ratingLabels": ["", "Schwach", "Okay", "Gut", "Sehr gut", "Großartig"]
+  },
+  "achievements": {
+    "levels": ["Wanderer", "Bergwanderer", "Trailläufer", "Gipfelsucher", "Gipfelsammler", "Berglegende"],
+    "achievementTitles": {
+      "first_summit": "Erster Gipfel",
+      "summit_5": "Wegbereiter",
+      "summit_10": "Gipfeljäger",
+      "summit_25": "Bergbezwinger",
+      "summit_50": "Bergmeister",
+      "region_complete": "Regionsbezwinger",
+      "high_2500": "Höhenflieger",
+      "high_3000": "Himmelsläufer",
+      "all_difficulties": "Allrounder",
+      "five_star": "Fünf-Sterne-Gipfel",
+      "storyteller": "Chronist"
+    },
+    "achievementDescriptions": {
+      "first_summit": "Trage deine allererste Tour ein",
+      "summit_5": "5 Gipfel erreichen",
+      "summit_10": "10 Gipfel erreichen",
+      "summit_25": "25 Gipfel erreichen",
+      "summit_50": "50 Gipfel erreichen",
+      "region_complete": "Alle Gipfel einer Region besteigen",
+      "high_2500": "Einen Gipfel über 2500 m besteigen",
+      "high_3000": "Einen Gipfel über 3000 m besteigen",
+      "all_difficulties": "Gipfel aller Schwierigkeitsstufen besteigen",
+      "five_star": "Einem Gipfel 5 Sterne geben",
+      "storyteller": "Einer Tour eine Notiz hinzufügen"
+    },
+    "sections": {
+      "leaderboard": "Rangliste",
+      "regionProgress": "Regionsfortschritt",
+      "achievements": "Erfolge",
+      "recentActivity": "Letzte Aktivität"
+    },
+    "stats": {
+      "totalElevation": "Gesamthöhenmeter",
+      "regionsExplored": "Regionen erkundet",
+      "highestPeak": "Höchster Gipfel",
+      "summitsThisYear": "Gipfel",
+      "badgesEarned": "Abzeichen",
+      "totalSummits": "Gipfel gesamt"
+    },
+    "level": {
+      "summitsUnit": "Gipfel",
+      "toNextLevel": "bis nächste Stufe",
+      "maxLevel": "Höchste Stufe erreicht!"
+    },
+    "leaderboard": {
+      "youLabel": "(du)",
+      "summitsLabel": "Gipfel"
+    },
+    "unknownPeak": "Unbekannter Gipfel",
+    "emptyState": "Trage deine erste Tour ein, um Erfolge freizuschalten!"
   }
 }

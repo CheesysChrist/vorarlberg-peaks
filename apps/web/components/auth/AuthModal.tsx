@@ -84,7 +84,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="mountaineer42"
+                  placeholder={texts.auth.usernamePlaceholder}
                 />
               </div>
             )}

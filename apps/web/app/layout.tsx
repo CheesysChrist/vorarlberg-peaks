@@ -7,7 +7,7 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-geist' });
 
 export const metadata: Metadata = {
   title: 'Vorarlberg Peaks',
-  description: 'Track the mountains you have hiked in Vorarlberg, Austria',
+  description: 'Halte fest, welche Berge du in Vorarlberg bestiegen hast',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

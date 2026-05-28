@@ -1,4 +1,5 @@
 import type { Hike, MountainWithHikeStatus } from '@vorarlberg-peaks/types';
+import { t } from '@/lib/i18n';
 
 export interface Achievement {
   id: string;
@@ -18,13 +19,14 @@ export interface UserStats {
   level: { number: number; title: string; currentMin: number; nextAt: number | null };
 }
 
+const l = t.achievements.levels;
 export const LEVELS = [
-  { min: 0, title: 'Wanderer', nextAt: 5 },
-  { min: 5, title: 'Hiker', nextAt: 10 },
-  { min: 10, title: 'Trail Runner', nextAt: 25 },
-  { min: 25, title: 'Summit Seeker', nextAt: 50 },
-  { min: 50, title: 'Peak Bagger', nextAt: 100 },
-  { min: 100, title: 'Mountain Legend', nextAt: null },
+  { min: 0, title: l[0], nextAt: 5 },
+  { min: 5, title: l[1], nextAt: 10 },
+  { min: 10, title: l[2], nextAt: 25 },
+  { min: 25, title: l[3], nextAt: 50 },
+  { min: 50, title: l[4], nextAt: 100 },
+  { min: 100, title: l[5], nextAt: null },
 ];
 
 export function computeStats(hikes: Hike[], mountains: MountainWithHikeStatus[]): UserStats {
@@ -73,86 +75,88 @@ export function computeAchievements(hikes: Hike[], mountains: MountainWithHikeSt
 
   const highestHiked = hiked.reduce((max, m) => Math.max(max, m.altitude), 0);
 
+  const titles = t.achievements.achievementTitles;
+  const descs = t.achievements.achievementDescriptions;
   return [
     {
       id: 'first_summit',
-      title: 'First Summit',
-      description: 'Log your very first hike',
+      title: titles.first_summit,
+      description: descs.first_summit,
       icon: '🏔️',
       unlocked: n >= 1,
     },
     {
       id: 'summit_5',
-      title: 'Trail Blazer',
-      description: 'Reach 5 summits',
+      title: titles.summit_5,
+      description: descs.summit_5,
       icon: '🥾',
       unlocked: n >= 5,
       progress: { current: Math.min(n, 5), total: 5 },
     },
     {
       id: 'summit_10',
-      title: 'Summit Hunter',
-      description: 'Reach 10 summits',
+      title: titles.summit_10,
+      description: descs.summit_10,
       icon: '🎯',
       unlocked: n >= 10,
       progress: { current: Math.min(n, 10), total: 10 },
     },
     {
       id: 'summit_25',
-      title: 'Peak Collector',
-      description: 'Reach 25 summits',
+      title: titles.summit_25,
+      description: descs.summit_25,
       icon: '🗺️',
       unlocked: n >= 25,
       progress: { current: Math.min(n, 25), total: 25 },
     },
     {
       id: 'summit_50',
-      title: 'Mountain Master',
-      description: 'Reach 50 summits',
+      title: titles.summit_50,
+      description: descs.summit_50,
       icon: '👑',
       unlocked: n >= 50,
       progress: { current: Math.min(n, 50), total: 50 },
     },
     {
       id: 'region_complete',
-      title: 'Region Conqueror',
-      description: 'Complete all peaks in any single region',
+      title: titles.region_complete,
+      description: descs.region_complete,
       icon: '🏆',
       unlocked: regionComplete,
     },
     {
       id: 'high_2500',
-      title: 'High Flyer',
-      description: 'Summit a peak above 2500m',
+      title: titles.high_2500,
+      description: descs.high_2500,
       icon: '✈️',
       unlocked: highestHiked >= 2500,
     },
     {
       id: 'high_3000',
-      title: 'Skywalker',
-      description: 'Summit a peak above 3000m',
+      title: titles.high_3000,
+      description: descs.high_3000,
       icon: '⚡',
       unlocked: highestHiked >= 3000,
     },
     {
       id: 'all_difficulties',
-      title: 'Well Rounded',
-      description: 'Hike peaks of every difficulty level',
+      title: titles.all_difficulties,
+      description: descs.all_difficulties,
       icon: '🌈',
       unlocked: diffHikedCount === 4,
       progress: { current: diffHikedCount, total: 4 },
     },
     {
       id: 'five_star',
-      title: 'Five Star Summit',
-      description: 'Give a 5-star rating to a summit',
+      title: titles.five_star,
+      description: descs.five_star,
       icon: '⭐',
       unlocked: hikes.some((h) => h.rating === 5),
     },
     {
       id: 'storyteller',
-      title: 'Storyteller',
-      description: 'Add notes to a hike',
+      title: titles.storyteller,
+      description: descs.storyteller,
       icon: '📝',
       unlocked: hikes.some((h) => !!h.notes?.trim()),
     },
