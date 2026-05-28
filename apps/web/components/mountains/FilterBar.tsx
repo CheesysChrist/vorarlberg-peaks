@@ -7,6 +7,7 @@ interface Filters {
   regionId?: string;
   difficulty?: string;
   search?: string;
+  hiked?: boolean;
 }
 
 interface FilterBarProps {
@@ -39,7 +40,7 @@ export function FilterBar({ filters, onChange, totalCount, hikedCount }: FilterB
           placeholder="Search mountains..."
           value={filters.search ?? ''}
           onChange={(e) => onChange({ ...filters, search: e.target.value || undefined })}
-          className="flex-1 min-w-48 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="flex-1 min-w-36 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
 
         <select
@@ -64,6 +65,28 @@ export function FilterBar({ filters, onChange, totalCount, hikedCount }: FilterB
           <option value="hard">Hard</option>
           <option value="expert">Expert</option>
         </select>
+      </div>
+
+      {/* Hiked filter toggle */}
+      <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-medium">
+        {([
+          { label: 'All peaks', value: undefined },
+          { label: '✓ Summited', value: true },
+          { label: '○ Todo', value: false },
+        ] as { label: string; value: boolean | undefined }[]).map(({ label, value }) => (
+          <button
+            key={String(value)}
+            onClick={() => onChange({ ...filters, hiked: value })}
+            className={[
+              'flex-1 py-1.5 px-2 transition-colors',
+              filters.hiked === value
+                ? 'bg-emerald-500 text-white'
+                : 'text-gray-500 hover:bg-gray-50',
+            ].join(' ')}
+          >
+            {label}
+          </button>
+        ))}
       </div>
     </div>
   );

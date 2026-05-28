@@ -12,6 +12,7 @@ export function useMountains(params?: {
   regionId?: string;
   difficulty?: string;
   search?: string;
+  hiked?: boolean;
   page?: number;
   limit?: number;
 }) {

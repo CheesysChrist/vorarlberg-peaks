@@ -8,7 +8,7 @@ export class MountainsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: MountainsQueryDto, userId?: string) {
-    const { regionId, difficulty, search, page, limit } = query;
+    const { regionId, difficulty, search, page, limit, hiked } = query;
     const skip = (page - 1) * limit;
 
     const where: Prisma.MountainWhereInput = {
@@ -19,6 +19,9 @@ export class MountainsService {
           { name: { contains: search, mode: 'insensitive' } },
           { nameDe: { contains: search, mode: 'insensitive' } },
         ],
+      }),
+      ...(hiked !== undefined && userId && {
+        hikes: hiked ? { some: { userId } } : { none: { userId } },
       }),
     };
 

@@ -6,7 +6,9 @@ import { useMountains, useHikes } from '@/lib/queries';
 import { useAuth } from '@/lib/auth';
 import { MountainCard } from '@/components/mountains/MountainCard';
 import { FilterBar } from '@/components/mountains/FilterBar';
+import { MountainDetailPanel } from '@/components/mountains/MountainDetailPanel';
 import { AuthModal } from '@/components/auth/AuthModal';
+import { AchievementsView } from '@/components/gamification/AchievementsView';
 import type { MountainWithHikeStatus } from '@vorarlberg-peaks/types';
 
 const PeaksMap = dynamic(() => import('@/components/map/PeaksMap').then((m) => m.PeaksMap), {
@@ -14,10 +16,13 @@ const PeaksMap = dynamic(() => import('@/components/map/PeaksMap').then((m) => m
   loading: () => <div className="w-full h-full bg-gray-100 animate-pulse rounded-xl" />,
 });
 
+type SidebarTab = 'peaks' | 'achievements';
+
 export default function DashboardPage() {
   const { isAuthenticated, user, logout } = useAuth();
   const [selectedMountain, setSelectedMountain] = useState<MountainWithHikeStatus | null>(null);
-  const [filters, setFilters] = useState<{ regionId?: string; difficulty?: string; search?: string }>({});
+  const [filters, setFilters] = useState<{ regionId?: string; difficulty?: string; search?: string; hiked?: boolean }>({});
+  const [activeTab, setActiveTab] = useState<SidebarTab>('peaks');
 
   const { data, isLoading } = useMountains({ ...filters, limit: 200 });
   const { data: globalStats } = useMountains({ limit: 1 });
@@ -25,6 +30,18 @@ export default function DashboardPage() {
   const mountains = data?.data ?? [];
   const totalHikedCount = hikes?.length ?? 0;
   const totalCount = globalStats?.total ?? data?.total ?? 0;
+
+  // Build a fast lookup from mountainId → full Hike (for notes/rating)
+  const hikesMap = new Map((hikes ?? []).map((h) => [h.mountainId, h]));
+
+  // Always derive from the live mountains list so it reflects post-mutation state
+  const resolvedSelected = selectedMountain
+    ? (mountains.find((m) => m.id === selectedMountain.id) ?? selectedMountain)
+    : null;
+
+  const handleMountainSelect = (mountain: MountainWithHikeStatus) => {
+    setSelectedMountain((prev) => (prev?.id === mountain.id ? null : mountain));
+  };
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
@@ -58,42 +75,103 @@ export default function DashboardPage() {
 
       <div className="flex flex-1 min-h-0">
         <aside className="w-96 shrink-0 flex flex-col border-r border-gray-200 bg-white">
-          <div className="p-4 border-b border-gray-100">
-            <FilterBar
-              filters={filters}
-              onChange={setFilters}
-              totalCount={totalCount}
-              hikedCount={totalHikedCount}
-            />
+          {/* Tabs */}
+          <div className="flex border-b border-gray-200 shrink-0">
+            <TabButton active={activeTab === 'peaks'} onClick={() => setActiveTab('peaks')}>
+              Peaks
+            </TabButton>
+            <TabButton active={activeTab === 'achievements'} onClick={() => setActiveTab('achievements')}>
+              Achievements
+              {totalHikedCount > 0 && (
+                <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 rounded-full px-1.5 py-0.5 font-medium tabular-nums">
+                  {totalHikedCount}
+                </span>
+              )}
+            </TabButton>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {isLoading && (
-              Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />
-              ))
-            )}
-            {mountains.map((mountain) => (
-              <MountainCard
-                key={mountain.id}
-                mountain={mountain}
-                selected={selectedMountain?.id === mountain.id}
-                onClick={() => setSelectedMountain(mountain)}
+          {activeTab === 'peaks' ? (
+            <>
+              <div className="p-4 border-b border-gray-100 shrink-0">
+                <FilterBar
+                  filters={filters}
+                  onChange={setFilters}
+                  totalCount={totalCount}
+                  hikedCount={totalHikedCount}
+                />
+              </div>
+
+              {/* Mountain list — shrinks when detail panel is open */}
+              <div
+                className="overflow-y-auto p-4 space-y-2"
+                style={{ flex: resolvedSelected ? '0 0 45%' : '1 1 0' }}
+              >
+                {isLoading &&
+                  Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />
+                  ))}
+                {mountains.map((mountain) => (
+                  <MountainCard
+                    key={mountain.id}
+                    mountain={mountain}
+                    hike={hikesMap.get(mountain.id)}
+                    selected={selectedMountain?.id === mountain.id}
+                    onClick={() => handleMountainSelect(mountain)}
+                  />
+                ))}
+                {!isLoading && mountains.length === 0 && (
+                  <p className="text-center text-gray-400 py-12 text-sm">No mountains found</p>
+                )}
+              </div>
+
+              {/* Detail panel — appears below list when a mountain is selected */}
+              {resolvedSelected && (
+                <MountainDetailPanel
+                  mountain={resolvedSelected}
+                  hike={hikesMap.get(resolvedSelected.id)}
+                  onClose={() => setSelectedMountain(null)}
+                />
+              )}
+            </>
+          ) : (
+            <div className="flex-1 overflow-y-auto">
+              <AchievementsView
+                hikes={hikes ?? []}
+                mountains={mountains}
+                totalCount={totalCount}
               />
-            ))}
-            {!isLoading && mountains.length === 0 && (
-              <p className="text-center text-gray-400 py-12 text-sm">No mountains found</p>
-            )}
-          </div>
+            </div>
+          )}
         </aside>
 
         <main className="flex-1 p-4">
-          <PeaksMap
-            mountains={mountains}
-            onMountainSelect={setSelectedMountain}
-          />
+          <PeaksMap mountains={mountains} onMountainSelect={handleMountainSelect} />
         </main>
       </div>
     </div>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={[
+        'flex-1 flex items-center justify-center gap-1 px-4 py-3 text-sm font-medium transition-colors',
+        active
+          ? 'text-emerald-600 border-b-2 border-emerald-500'
+          : 'text-gray-500 hover:text-gray-700 border-b-2 border-transparent',
+      ].join(' ')}
+    >
+      {children}
+    </button>
   );
 }
