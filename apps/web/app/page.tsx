@@ -173,7 +173,11 @@ export default function DashboardPage() {
         </aside>
 
         <main className="flex-1 p-4">
-          <PeaksMap mountains={mountains} onMountainSelect={handleMountainSelect} />
+          <PeaksMap
+            mountains={mountains}
+            onMountainSelect={handleMountainSelect}
+            fitKey={JSON.stringify(filters)}
+          />
         </main>
       </div>
     </div>

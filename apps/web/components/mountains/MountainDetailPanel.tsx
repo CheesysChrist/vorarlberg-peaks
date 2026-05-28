@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { Hike, MountainWithHikeStatus } from '@vorarlberg-peaks/types';
 import { useRemoveHike } from '@/lib/queries';
 import { LogHikeModal } from '@/components/hikes/LogHikeModal';
+import { useToast } from '@/lib/toast';
 
 const difficultyLabel: Record<string, { label: string; color: string }> = {
   easy: { label: 'Easy', color: 'text-green-700 bg-green-100' },
@@ -21,6 +22,7 @@ interface MountainDetailPanelProps {
 export function MountainDetailPanel({ mountain, hike, onClose }: MountainDetailPanelProps) {
   const [showModal, setShowModal] = useState(false);
   const removeHike = useRemoveHike();
+  const toast = useToast();
   const diff = mountain.difficulty ? difficultyLabel[mountain.difficulty] : null;
 
   return (
@@ -116,7 +118,10 @@ export function MountainDetailPanel({ mountain, hike, onClose }: MountainDetailP
                   Edit summit
                 </button>
                 <button
-                  onClick={() => removeHike.mutate(mountain.id)}
+                  onClick={() => removeHike.mutate(mountain.id, {
+                    onSuccess: () => toast('Hike removed'),
+                    onError: () => toast('Something went wrong', 'error'),
+                  })}
                   disabled={removeHike.isPending}
                   className="px-3 py-2 rounded-xl border border-gray-200 text-red-400 hover:text-red-600 hover:border-red-200 text-sm transition-colors disabled:opacity-50"
                   title="Remove hike"

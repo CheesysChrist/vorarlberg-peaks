@@ -87,9 +87,19 @@ export function AchievementsView({ hikes, mountains, totalCount }: AchievementsV
           icon="🏔️"
         />
         <StatCard
-          label="Achievements"
+          label={`${new Date().getFullYear()} summits`}
+          value={String(stats.hikedThisYear)}
+          icon="📅"
+        />
+        <StatCard
+          label="Badges earned"
           value={`${unlockedCount} / ${achievements.length}`}
           icon="🏅"
+        />
+        <StatCard
+          label="Total summits"
+          value={String(stats.totalSummits)}
+          icon="⛰️"
         />
       </div>
 

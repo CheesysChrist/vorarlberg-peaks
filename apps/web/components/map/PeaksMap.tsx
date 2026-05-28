@@ -46,12 +46,15 @@ function buildPopupHTML(mountain: MountainWithHikeStatus): string {
 interface PeaksMapProps {
   mountains: MountainWithHikeStatus[];
   onMountainSelect?: (mountain: MountainWithHikeStatus) => void;
+  /** Opaque key — when it changes AND mountains < full set, map fits to them */
+  fitKey?: string;
 }
 
-export function PeaksMap({ mountains, onMountainSelect }: PeaksMapProps) {
+export function PeaksMap({ mountains, onMountainSelect, fitKey }: PeaksMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const prevFitKey = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -99,7 +102,15 @@ export function PeaksMap({ mountains, onMountainSelect }: PeaksMapProps) {
       el.addEventListener('click', () => onMountainSelect?.(mountain));
       markersRef.current.push(marker);
     });
-  }, [mountains, onMountainSelect]);
+
+    // Fit viewport when a filter is active and produces a focused result set
+    if (fitKey !== prevFitKey.current && mountains.length > 0 && mountains.length <= 30) {
+      const bounds = new mapboxgl.LngLatBounds();
+      mountains.forEach((m) => bounds.extend([m.longitude, m.latitude]));
+      mapRef.current?.fitBounds(bounds, { padding: 80, maxZoom: 13, duration: 700 });
+    }
+    prevFitKey.current = fitKey;
+  }, [mountains, onMountainSelect, fitKey]);
 
   return <div ref={containerRef} className="w-full h-full rounded-xl overflow-hidden" />;
 }
