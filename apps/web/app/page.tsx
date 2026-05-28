@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { useMountains, useHikes } from '@/lib/queries';
 import { useAuth } from '@/lib/auth';
@@ -10,6 +10,7 @@ import { MountainDetailPanel } from '@/components/mountains/MountainDetailPanel'
 import { AuthModal } from '@/components/auth/AuthModal';
 import { AchievementsView } from '@/components/gamification/AchievementsView';
 import type { MountainWithHikeStatus } from '@vorarlberg-peaks/types';
+import { t } from '@/lib/i18n';
 
 const PeaksMap = dynamic(() => import('@/components/map/PeaksMap').then((m) => m.PeaksMap), {
   ssr: false,
@@ -52,11 +53,10 @@ export default function DashboardPage() {
     ? (mountains.find((m) => m.id === selectedMountain.id) ?? selectedMountain)
     : null;
 
-  const handleMountainSelect = (mountain: MountainWithHikeStatus) => {
+  const handleMountainSelect = useCallback((mountain: MountainWithHikeStatus) => {
     setSelectedMountain((prev) => (prev?.id === mountain.id ? null : mountain));
-    // On mobile, switch to peaks panel to show the detail
     setMobilePanel('peaks');
-  };
+  }, []);
 
   // Shared sidebar content between mobile and desktop
   const sidebarInner = (
@@ -64,10 +64,10 @@ export default function DashboardPage() {
       {/* Tabs */}
       <div className="flex border-b border-gray-200 shrink-0">
         <TabButton active={activeTab === 'peaks'} onClick={() => setActiveTab('peaks')}>
-          Peaks
+          {t.dashboard.tabs.peaks}
         </TabButton>
         <TabButton active={activeTab === 'achievements'} onClick={() => setActiveTab('achievements')}>
-          Achievements
+          {t.dashboard.tabs.achievements}
           {totalHikedCount > 0 && (
             <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 rounded-full px-1.5 py-0.5 font-medium tabular-nums">
               {totalHikedCount}
@@ -83,16 +83,16 @@ export default function DashboardPage() {
           </div>
 
           <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between shrink-0">
-            <span className="text-xs text-gray-400">{mountains.length} peaks</span>
+            <span className="text-xs text-gray-400">{mountains.length} {t.dashboard.counts.peaks}</span>
             <select
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as SortKey)}
               className="text-xs text-gray-500 border-0 bg-transparent focus:outline-none cursor-pointer"
             >
-              <option value="altitude_desc">Altitude ↓</option>
-              <option value="altitude_asc">Altitude ↑</option>
-              <option value="name_asc">Name A–Z</option>
-              <option value="hiked_desc">Recently hiked</option>
+              <option value="altitude_desc">{t.dashboard.sort.altitudeDesc}</option>
+              <option value="altitude_asc">{t.dashboard.sort.altitudeAsc}</option>
+              <option value="name_asc">{t.dashboard.sort.nameAsc}</option>
+              <option value="hiked_desc">{t.dashboard.sort.recentlyHiked}</option>
             </select>
           </div>
 
@@ -113,7 +113,7 @@ export default function DashboardPage() {
               />
             ))}
             {!isLoading && mountains.length === 0 && (
-              <p className="text-center text-gray-400 py-12 text-sm">No mountains found</p>
+              <p className="text-center text-gray-400 py-12 text-sm">{t.dashboard.empty}</p>
             )}
           </div>
 
@@ -142,15 +142,15 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2 md:gap-3">
           <span className="text-xl md:text-2xl">⛰️</span>
           <div>
-            <h1 className="text-base md:text-lg font-bold text-gray-900 leading-none">Vorarlberg Peaks</h1>
-            <p className="hidden sm:block text-xs text-gray-500 mt-0.5">Your mountain log</p>
+            <h1 className="text-base md:text-lg font-bold text-gray-900 leading-none">{t.dashboard.title}</h1>
+            <p className="hidden sm:block text-xs text-gray-500 mt-0.5">{t.dashboard.subtitle}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 md:gap-4">
           <div className="text-sm text-gray-500">
             <span className="text-emerald-600 font-semibold">{totalHikedCount}</span>
-            <span className="hidden sm:inline"> summits reached</span>
-            <span className="sm:hidden"> summits</span>
+            <span className="hidden sm:inline"> {t.dashboard.counts.summitsReached}</span>
+            <span className="sm:hidden"> {t.dashboard.counts.summitsShort}</span>
           </div>
           {isAuthenticated && (
             <div className="flex items-center gap-2">
@@ -159,7 +159,7 @@ export default function DashboardPage() {
                 onClick={logout}
                 className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1 rounded-md hover:bg-gray-100 transition-colors"
               >
-                Sign out
+                {t.common.buttons.signOut}
               </button>
             </div>
           )}
@@ -209,9 +209,9 @@ export default function DashboardPage() {
         {/* Mobile bottom tab bar */}
         <nav className="flex shrink-0 border-t border-gray-200 bg-white safe-area-pb">
           {([
-            { key: 'map', icon: '🗺️', label: 'Map' },
-            { key: 'peaks', icon: '⛰️', label: 'Peaks' },
-            { key: 'achievements', icon: '🏅', label: 'Stats' },
+            { key: 'map', icon: '🗺️', label: t.dashboard.mobileTabs.map },
+            { key: 'peaks', icon: '⛰️', label: t.dashboard.mobileTabs.peaks },
+            { key: 'achievements', icon: '🏅', label: t.dashboard.mobileTabs.stats },
           ] as { key: MobilePanel; icon: string; label: string }[]).map(({ key, icon, label }) => (
             <button
               key={key}
