@@ -21,7 +21,7 @@ export default function DashboardPage() {
 
   const { data, isLoading } = useMountains({ ...filters, limit: 200 });
   const { data: globalStats } = useMountains({ limit: 1 });
-  const { data: hikes } = useHikes();
+  const { data: hikes } = useHikes(isAuthenticated);
   const mountains = data?.data ?? [];
   const totalHikedCount = hikes?.length ?? 0;
   const totalCount = globalStats?.total ?? data?.total ?? 0;

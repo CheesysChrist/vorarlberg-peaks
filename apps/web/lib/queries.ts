@@ -40,10 +40,11 @@ export function useLogHike() {
   });
 }
 
-export function useHikes() {
+export function useHikes(enabled = true) {
   return useQuery({
     queryKey: queryKeys.hikes(),
     queryFn: () => apiClient.get<Hike[]>('/hikes').then((r) => r.data),
+    enabled,
   });
 }
 
