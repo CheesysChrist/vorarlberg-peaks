@@ -17,17 +17,30 @@ const PeaksMap = dynamic(() => import('@/components/map/PeaksMap').then((m) => m
 });
 
 type SidebarTab = 'peaks' | 'achievements';
+type SortKey = 'altitude_desc' | 'altitude_asc' | 'name_asc' | 'hiked_desc';
+
+function sortMountains(mountains: MountainWithHikeStatus[], sort: SortKey): MountainWithHikeStatus[] {
+  return [...mountains].sort((a, b) => {
+    switch (sort) {
+      case 'altitude_asc':  return a.altitude - b.altitude;
+      case 'name_asc':      return a.name.localeCompare(b.name);
+      case 'hiked_desc':    return (b.hikedAt ?? '').localeCompare(a.hikedAt ?? '');
+      default:              return b.altitude - a.altitude; // altitude_desc
+    }
+  });
+}
 
 export default function DashboardPage() {
   const { isAuthenticated, user, logout } = useAuth();
   const [selectedMountain, setSelectedMountain] = useState<MountainWithHikeStatus | null>(null);
   const [filters, setFilters] = useState<{ regionId?: string; difficulty?: string; search?: string; hiked?: boolean }>({});
   const [activeTab, setActiveTab] = useState<SidebarTab>('peaks');
+  const [sortKey, setSortKey] = useState<SortKey>('altitude_desc');
 
   const { data, isLoading } = useMountains({ ...filters, limit: 200 });
   const { data: globalStats } = useMountains({ limit: 1 });
   const { data: hikes } = useHikes(isAuthenticated);
-  const mountains = data?.data ?? [];
+  const mountains = sortMountains(data?.data ?? [], sortKey);
   const totalHikedCount = hikes?.length ?? 0;
   const totalCount = globalStats?.total ?? data?.total ?? 0;
 
@@ -99,6 +112,21 @@ export default function DashboardPage() {
                   totalCount={totalCount}
                   hikedCount={totalHikedCount}
                 />
+              </div>
+
+              {/* Sort bar */}
+              <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between shrink-0">
+                <span className="text-xs text-gray-400">{mountains.length} peaks</span>
+                <select
+                  value={sortKey}
+                  onChange={(e) => setSortKey(e.target.value as SortKey)}
+                  className="text-xs text-gray-500 border-0 bg-transparent focus:outline-none cursor-pointer"
+                >
+                  <option value="altitude_desc">Altitude ↓</option>
+                  <option value="altitude_asc">Altitude ↑</option>
+                  <option value="name_asc">Name A–Z</option>
+                  <option value="hiked_desc">Recently hiked</option>
+                </select>
               </div>
 
               {/* Mountain list — shrinks when detail panel is open */}

@@ -7,6 +7,42 @@ import type { MountainWithHikeStatus } from '@vorarlberg-peaks/types';
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? '';
 
+const DIFFICULTY_STYLE: Record<string, { color: string; label: string }> = {
+  easy:     { color: '#16a34a', label: 'Easy' },
+  moderate: { color: '#ca8a04', label: 'Moderate' },
+  hard:     { color: '#ea580c', label: 'Hard' },
+  expert:   { color: '#dc2626', label: 'Expert' },
+};
+
+function buildPopupHTML(mountain: MountainWithHikeStatus): string {
+  const diff = mountain.difficulty ? DIFFICULTY_STYLE[mountain.difficulty] : null;
+  const hikeDate = mountain.hikedAt
+    ? new Date(mountain.hikedAt).toLocaleDateString('de-AT', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
+
+  return `
+    <div style="font-family:system-ui,-apple-system,sans-serif;min-width:160px;padding:2px 0">
+      <div style="font-weight:700;font-size:13px;color:#111827;line-height:1.3">${mountain.name}</div>
+      <div style="font-size:11px;color:#6b7280;margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span>${mountain.altitude}m</span>
+        ${mountain.region?.name ? `<span style="opacity:.5">·</span><span>${mountain.region.name}</span>` : ''}
+        ${diff ? `<span style="opacity:.5">·</span><span style="color:${diff.color};font-weight:600">${diff.label}</span>` : ''}
+      </div>
+      ${mountain.hiked && hikeDate ? `
+        <div style="margin-top:7px;padding:4px 8px;background:#ecfdf5;border-radius:6px;font-size:11px;color:#059669;font-weight:500">
+          ✓ ${hikeDate}
+        </div>
+      ` : !mountain.hiked ? `
+        <div style="margin-top:7px;font-size:11px;color:#9ca3af">Click to log this summit</div>
+      ` : ''}
+    </div>
+  `;
+}
+
 interface PeaksMapProps {
   mountains: MountainWithHikeStatus[];
   onMountainSelect?: (mountain: MountainWithHikeStatus) => void;
@@ -23,7 +59,7 @@ export function PeaksMap({ mountains, onMountainSelect }: PeaksMapProps) {
     mapRef.current = new mapboxgl.Map({
       container: containerRef.current,
       style: 'mapbox://styles/mapbox/outdoors-v12',
-      center: [9.9, 47.25], // Vorarlberg center
+      center: [9.9, 47.25],
       zoom: 9,
       bounds: [
         [9.5, 47.0],
@@ -52,11 +88,8 @@ export function PeaksMap({ mountains, onMountainSelect }: PeaksMapProps) {
         mountain.hiked ? 'bg-emerald-500' : 'bg-slate-400',
       ].join(' ');
 
-      const popup = new mapboxgl.Popup({ offset: 12, closeButton: false }).setHTML(
-        `<div class="text-sm font-medium">${mountain.name}</div>
-         <div class="text-xs text-gray-500">${mountain.altitude}m · ${mountain.region?.name ?? ''}</div>
-         ${mountain.hiked ? '<div class="text-xs text-emerald-600 mt-1">✓ Hiked</div>' : ''}`,
-      );
+      const popup = new mapboxgl.Popup({ offset: 14, closeButton: false, maxWidth: '220px' })
+        .setHTML(buildPopupHTML(mountain));
 
       const marker = new mapboxgl.Marker(el)
         .setLngLat([mountain.longitude, mountain.latitude])

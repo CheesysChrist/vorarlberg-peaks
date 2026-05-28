@@ -15,6 +15,25 @@ export function AchievementsView({ hikes, mountains, totalCount }: AchievementsV
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
   const sorted = [...achievements].sort((a, b) => Number(b.unlocked) - Number(a.unlocked));
 
+  // Per-region completion, sorted by % descending then name
+  const regionProgress = Object.entries(
+    mountains.reduce<Record<string, { name: string; total: number; hiked: number }>>(
+      (acc, m) => {
+        const key = m.regionId;
+        if (!acc[key]) acc[key] = { name: m.region?.name ?? key, total: 0, hiked: 0 };
+        acc[key].total++;
+        if (m.hiked) acc[key].hiked++;
+        return acc;
+      },
+      {}
+    )
+  )
+    .map(([regionId, data]) => ({ regionId, ...data }))
+    .sort(
+      (a, b) =>
+        b.hiked / b.total - a.hiked / a.total || a.name.localeCompare(b.name)
+    );
+
   const levelProgress =
     stats.level.nextAt != null
       ? ((stats.totalSummits - stats.level.currentMin) /
@@ -73,6 +92,39 @@ export function AchievementsView({ hikes, mountains, totalCount }: AchievementsV
           icon="🏅"
         />
       </div>
+
+      {/* Region Progress */}
+      {regionProgress.length > 0 && (
+        <div>
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+            Region Progress
+          </h3>
+          <div className="space-y-2">
+            {regionProgress.map(({ regionId, name, total, hiked }) => (
+              <div key={regionId} className="bg-white rounded-xl border border-gray-200 p-3">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-sm font-medium text-gray-800 truncate">{name}</span>
+                  <span className="text-xs text-gray-400 tabular-nums shrink-0 ml-2">
+                    {hiked}/{total}
+                    {hiked === total && total > 0 && (
+                      <span className="ml-1 text-emerald-500">✓</span>
+                    )}
+                  </span>
+                </div>
+                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className={[
+                      'h-full rounded-full transition-all duration-500',
+                      hiked === total && total > 0 ? 'bg-emerald-500' : 'bg-emerald-400',
+                    ].join(' ')}
+                    style={{ width: total > 0 ? `${(hiked / total) * 100}%` : '0%' }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Achievements list */}
       <div>
