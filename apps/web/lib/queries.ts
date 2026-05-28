@@ -6,6 +6,7 @@ export const queryKeys = {
   mountains: (params?: object) => ['mountains', params] as const,
   regions: () => ['regions'] as const,
   hikes: () => ['hikes'] as const,
+  leaderboard: () => ['leaderboard'] as const,
 };
 
 export function useMountains(params?: {
@@ -46,6 +47,22 @@ export function useHikes(enabled = true) {
     queryKey: queryKeys.hikes(),
     queryFn: () => apiClient.get<Hike[]>('/hikes').then((r) => r.data),
     enabled,
+  });
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  userId: string;
+  username: string;
+  summitCount: number;
+  isCurrentUser: boolean;
+}
+
+export function useLeaderboard() {
+  return useQuery({
+    queryKey: queryKeys.leaderboard(),
+    queryFn: () => apiClient.get<LeaderboardEntry[]>('/leaderboard?limit=10').then((r) => r.data),
+    staleTime: 60_000,
   });
 }
 

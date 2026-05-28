@@ -2,6 +2,7 @@
 
 import type { Hike, MountainWithHikeStatus } from '@vorarlberg-peaks/types';
 import { computeStats, computeAchievements } from '@/lib/achievements';
+import { useLeaderboard } from '@/lib/queries';
 
 interface AchievementsViewProps {
   hikes: Hike[];
@@ -10,6 +11,7 @@ interface AchievementsViewProps {
 }
 
 export function AchievementsView({ hikes, mountains, totalCount }: AchievementsViewProps) {
+  const { data: leaderboard } = useLeaderboard();
   const stats = computeStats(hikes, mountains);
   const achievements = computeAchievements(hikes, mountains);
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
@@ -71,6 +73,47 @@ export function AchievementsView({ hikes, mountains, totalCount }: AchievementsV
           </div>
         </div>
       </div>
+
+      {/* Leaderboard */}
+      {leaderboard && leaderboard.length > 0 && (
+        <div>
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+            Leaderboard
+          </h3>
+          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            {leaderboard.map((entry, idx) => (
+              <div
+                key={entry.userId}
+                className={[
+                  'flex items-center gap-3 px-4 py-3',
+                  idx < leaderboard.length - 1 ? 'border-b border-gray-100' : '',
+                  entry.isCurrentUser ? 'bg-emerald-50' : '',
+                ].join(' ')}
+              >
+                <span
+                  className={[
+                    'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0',
+                    entry.rank === 1 ? 'bg-amber-400 text-white' :
+                    entry.rank === 2 ? 'bg-gray-300 text-gray-700' :
+                    entry.rank === 3 ? 'bg-amber-600 text-white' :
+                    'bg-gray-100 text-gray-500',
+                  ].join(' ')}
+                >
+                  {entry.rank}
+                </span>
+                <span className={`flex-1 text-sm font-medium ${entry.isCurrentUser ? 'text-emerald-700' : 'text-gray-800'}`}>
+                  {entry.username}
+                  {entry.isCurrentUser && <span className="ml-1.5 text-xs text-emerald-500">(you)</span>}
+                </span>
+                <span className="text-sm font-semibold text-gray-700 tabular-nums">
+                  {entry.summitCount}
+                  <span className="text-xs text-gray-400 font-normal ml-1">summits</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 gap-2">
