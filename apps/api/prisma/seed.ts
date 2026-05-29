@@ -692,6 +692,17 @@ const mountains: MountainSeed[] = [
     externalId: 'kapf-vorderland',
   },
   {
+    name: 'Kummenberg',
+    altitude: 667,
+    latitude: 47.336125,
+    longitude: 9.616834,
+    regionId: 'rheintal',
+    difficulty: 'easy',
+    description: 'Distinctive volcanic hill above Koblach in the Rhine Valley, known for broad views and archaeological significance.',
+    routeNotes: 'Usually approached from Koblach or Altach on short signed paths through woodland and meadow terrain. It is best suited to a short local outing rather than a high-alpine summit day.',
+    externalId: 'kummenberg',
+  },
+  {
     name: 'Losenpass',
     altitude: 1140,
     latitude: 47.4239113,
